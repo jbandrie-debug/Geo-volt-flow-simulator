@@ -328,6 +328,12 @@
             filter: drop-shadow(0 0 8px var(--accent-yellow));
         }
 
+        .appliance-on {
+            fill: rgba(255, 193, 7, 0.28) !important;
+            stroke: var(--accent-yellow) !important;
+            filter: drop-shadow(0 0 9px var(--accent-yellow));
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -385,9 +391,301 @@
                 font-size: 0.8rem;
             }
         }
+
+        .welcome-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: grid;
+            place-items: center;
+            padding: 1.25rem;
+            background:
+                radial-gradient(ellipse at 50% 42%, rgba(35, 119, 204, 0.30), transparent 43%),
+                radial-gradient(ellipse at 85% 82%, rgba(0, 214, 143, 0.11), transparent 34%),
+                radial-gradient(ellipse at 50% 38%, #263b5a 0%, #171d2c 58%, #10141e 100%);
+            transition: opacity 350ms ease, visibility 350ms ease;
+        }
+
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.22;
+            background-image: linear-gradient(rgba(110, 169, 226, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(110, 169, 226, 0.12) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse at center, black, transparent 78%);
+            animation: grid-drift 18s linear infinite;
+        }
+
+        .welcome-screen.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .welcome-card {
+            position: relative;
+            isolation: isolate;
+            width: min(100%, 560px);
+            padding: clamp(1.75rem, 7vw, 3.25rem);
+            text-align: center;
+            border: 1px solid rgba(127, 194, 255, 0.36);
+            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(35, 49, 72, 0.97), rgba(18, 24, 38, 0.98));
+            box-shadow: 0 28px 100px rgba(0, 0, 0, 0.56), 0 0 55px rgba(74, 158, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+            animation: welcome-arrive 650ms cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: 1px;
+            border-radius: inherit;
+            background: linear-gradient(115deg, transparent 15%, rgba(74, 158, 255, 0.13) 45%, transparent 68%);
+            background-size: 230% 100%;
+            animation: card-energy-sweep 5s ease-in-out 1.2s infinite;
+            pointer-events: none;
+        }
+
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            inset: -25%;
+            opacity: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 14% 38%, rgba(222, 246, 255, 0.95), rgba(70, 167, 255, 0.35) 5%, transparent 23%);
+            animation: impact-flash 760ms ease-out 3s both;
+        }
+
+        .welcome-card > * { position: relative; z-index: 1; }
+
+        .welcome-word {
+            position: relative;
+            display: inline-flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.015em;
+            margin: 0.2rem 0 0.65rem;
+            font-size: clamp(2.9rem, 12vw, 5.3rem);
+            line-height: 1.05;
+            font-weight: 950;
+            letter-spacing: 0.015em;
+            perspective: 650px;
+        }
+
+        .welcome-letter {
+            display: inline-block;
+            opacity: 0;
+            color: transparent;
+            background: linear-gradient(112deg, #465160 0%, #cbd5e1 9%, #ffffff 17%, #778394 27%, #f7fbff 38%, #535f70 49%, #e9f1fa 60%, #707d8e 72%, #ffffff 84%, #4a5666 100%);
+            background-size: 230% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 1px 0 #e5edf5) drop-shadow(0 3px 0 #737e8d) drop-shadow(0 6px 0 #303a49) drop-shadow(0 12px 12px rgba(0, 0, 0, 0.72));
+            transform: translateY(18px) rotateX(-45deg) scale(0.82);
+            animation: letter-reveal 520ms cubic-bezier(.18,.85,.25,1.2) calc(var(--letter-index) * 400ms) forwards,
+                       metallic-shine 3.2s linear 2.6s infinite;
+        }
+
+        .welcome-space { width: 0.18em; }
+
+        .welcome-first-letter {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+            transform-origin: 55% 90%;
+            animation: g-misaligned 480ms cubic-bezier(.2,.8,.2,1) 3s forwards;
+        }
+
+        .welcome-lightning {
+            position: absolute;
+            z-index: 3;
+            top: -0.74em;
+            left: 0.17em;
+            width: 0.55em;
+            height: 0.95em;
+            overflow: visible;
+            opacity: 0;
+            filter: drop-shadow(0 0 8px #b9eaff) drop-shadow(0 0 18px #4a9eff);
+            animation: lightning-hit 620ms ease-out 3s both;
+            pointer-events: none;
+        }
+
+        .welcome-lightning path {
+            fill: #f7fdff;
+            stroke: #54b8ff;
+            stroke-width: 2;
+            stroke-linejoin: round;
+        }
+
+        .welcome-smoke {
+            position: absolute;
+            z-index: 4;
+            top: -0.28em;
+            left: 0.25em;
+            width: 0.65em;
+            height: 0.65em;
+            pointer-events: none;
+        }
+
+        .welcome-smoke span {
+            position: absolute;
+            left: 45%;
+            bottom: 0;
+            width: 0.26em;
+            height: 0.26em;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #e6edf4, #8d99a8 50%, rgba(95, 107, 122, 0.05) 75%);
+            opacity: 0;
+            filter: blur(1px);
+            animation: smoke-rise 1.5s ease-out 3.38s both;
+        }
+
+        .welcome-smoke span:nth-child(2) { animation-delay: 3.52s; left: 10%; }
+        .welcome-smoke span:nth-child(3) { animation-delay: 3.64s; left: 67%; }
+
+        .welcome-subtitle {
+            margin: 0 0 1.1rem !important;
+            color: transparent !important;
+            background: linear-gradient(100deg, #8e9aa9, #f5f8fc 25%, #7d8998 48%, #f5f8fc 70%, #8793a2);
+            background-size: 220% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(0.82rem, 3vw, 1.06rem);
+            font-weight: 800;
+            letter-spacing: clamp(0.12em, 1vw, 0.24em);
+            text-shadow: 0 2px 0 #394352, 0 5px 9px rgba(0, 0, 0, 0.6);
+            animation: subtitle-arrive 700ms ease-out 2.65s both, metallic-shine 3.2s linear 3.15s infinite;
+        }
+
+        .welcome-description {
+            margin: 0 0 1.45rem !important;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .welcome-start {
+            min-width: 190px;
+            border: 0;
+            border-radius: 10px;
+            padding: 0.8rem 1.25rem;
+            background: linear-gradient(100deg, #258bff, #00d68f);
+            color: #101725;
+            font-weight: 750;
+            box-shadow: 0 8px 24px rgba(0, 214, 143, 0.2);
+        }
+
+        .welcome-start:hover {
+            filter: brightness(1.12);
+            transform: translateY(-1px);
+        }
+
+        .welcome-start:focus-visible {
+            outline: 3px solid white;
+            outline-offset: 3px;
+        }
+
+        .welcome-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+        }
+
+        @keyframes letter-reveal {
+            to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+        }
+
+        @keyframes metallic-shine {
+            from { background-position: 130% 0; }
+            to { background-position: -130% 0; }
+        }
+
+        @keyframes lightning-hit {
+            0%, 100% { opacity: 0; transform: translateY(-20px) scale(0.7); }
+            18%, 31%, 49% { opacity: 1; }
+            24%, 40% { opacity: 0.15; }
+            68% { opacity: 0.95; transform: translateY(22px) scale(1); }
+            82% { opacity: 0; transform: translateY(25px) scale(0.95); }
+        }
+
+        @keyframes g-misaligned {
+            0% { transform: translate(0, 0) rotate(0); }
+            35% { transform: translate(7px, 2px) rotate(9deg) skewX(7deg); }
+            62% { transform: translate(3px, 5px) rotate(5deg) skewX(-3deg); }
+            100% { transform: translate(5px, 4px) rotate(6deg) skewX(2deg); }
+        }
+
+        @keyframes smoke-rise {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.35); }
+            18% { opacity: 0.72; }
+            100% { opacity: 0; transform: translate(-0.12em, -1.2em) scale(2.2); }
+        }
+
+        @keyframes subtitle-arrive {
+            from { opacity: 0; transform: translateY(9px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes grid-drift {
+            to { background-position: 48px 48px; }
+        }
+
+        @keyframes card-energy-sweep {
+            0%, 65%, 100% { background-position: 130% 0; }
+            35% { background-position: -130% 0; }
+        }
+
+        @keyframes impact-flash {
+            0%, 100% { opacity: 0; }
+            10% { opacity: 0.9; }
+            22% { opacity: 0.08; }
+            35% { opacity: 0.55; }
+            65% { opacity: 0; }
+        }
+
+        @keyframes welcome-arrive {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .welcome-screen::before, .welcome-card, .welcome-card::before, .welcome-card::after, .welcome-letter, .welcome-subtitle, .welcome-first-letter { animation: none; }
+            .welcome-letter { opacity: 1; transform: none; }
+            .welcome-lightning, .welcome-smoke { display: none; }
+            .welcome-card::after { display: none; }
+        }
     </style>
 </head>
 <body>
+    <section id="welcome-screen" class="welcome-screen" role="dialog" aria-modal="true" aria-labelledby="welcome-title" aria-describedby="welcome-description">
+        <div class="welcome-card">
+            <h1 id="welcome-title" class="welcome-word" aria-label="GEO.SAB">
+                <span class="welcome-first-letter">
+                    <span class="welcome-letter" style="--letter-index:0" aria-hidden="true">G</span>
+                    <svg class="welcome-lightning" viewBox="0 0 60 100" aria-hidden="true"><path d="M35 2 L10 52 L27 50 L18 96 L52 38 L33 41 Z" /></svg>
+                    <span class="welcome-smoke" aria-hidden="true"><span></span><span></span><span></span></span>
+                </span>
+                <span class="welcome-letter" style="--letter-index:1" aria-hidden="true">E</span>
+                <span class="welcome-letter" style="--letter-index:2" aria-hidden="true">O</span>
+                <span class="welcome-letter welcome-space" style="--letter-index:3" aria-hidden="true">.</span>
+                <span class="welcome-letter" style="--letter-index:4" aria-hidden="true">S</span>
+                <span class="welcome-letter" style="--letter-index:5" aria-hidden="true">A</span>
+                <span class="welcome-letter" style="--letter-index:6" aria-hidden="true">B</span>
+            </h1>
+            <p id="welcome-description" class="welcome-subtitle">VOLT-FLOW SIMULATOR</p>
+            <p id="welcome-tagline" class="welcome-description">Build a circuit and watch electricity flow through it.</p>
+            <div class="welcome-actions">
+                <button id="welcome-start" class="welcome-start">Start Simulating</button>
+            </div>
+        </div>
+    </section>
     <header>
         <div class="logo">⚡ Volt-Flow</div>
         <div class="header-controls">
@@ -411,6 +709,10 @@
                 <div style="font-size: 1.5rem;">🔋</div>
                 <div id="tool-battery-label">Battery</div>
             </button>
+            <button class="tool-btn" data-tool="acSource" aria-label="AC Source">
+                <div style="font-size: 1.5rem;">∿</div>
+                <div id="tool-ac-source-label">AC Source</div>
+            </button>
             <button class="tool-btn" data-tool="resistor" aria-label="Resistor">
                 <div style="font-size: 1.5rem;">⊏⊐</div>
                 <div id="tool-resistor-label">Resistor</div>
@@ -419,9 +721,17 @@
                 <div style="font-size: 1.5rem;">⏚</div>
                 <div id="tool-switch-label">Switch</div>
             </button>
+            <button class="tool-btn" data-tool="utilityBox" aria-label="Utility Box">
+                <div style="font-size: 1.5rem;">▣</div>
+                <div id="tool-utility-box-label">Utility Box</div>
+            </button>
             <button class="tool-btn" data-tool="bulb" aria-label="Bulb">
                 <div style="font-size: 1.5rem;">💡</div>
                 <div id="tool-bulb-label">Bulb</div>
+            </button>
+            <button class="tool-btn" data-tool="appliance" aria-label="Appliance Load">
+                <div style="font-size: 1.5rem;">▣</div>
+                <div id="tool-appliance-label">Appliance</div>
             </button>
             <button class="tool-btn" data-tool="wire" aria-label="Wire">
                 <div style="font-size: 1.5rem;">―</div>
@@ -476,6 +786,14 @@
                         <div class="measurement-label" id="power-label">Power</div>
                         <div class="measurement-value" id="power-value">― W</div>
                     </div>
+                    <div class="measurement-item" id="apparent-power-item" style="display:none;">
+                        <div class="measurement-label" id="apparent-power-label">Apparent Power</div>
+                        <div class="measurement-value" id="apparent-power-value">― VA</div>
+                    </div>
+                    <div class="measurement-item" id="power-factor-item" style="display:none;">
+                        <div class="measurement-label" id="power-factor-label">Power Factor</div>
+                        <div class="measurement-value" id="power-factor-value">―</div>
+                    </div>
                 </div>
                 <div id="circuit-status"></div>
             </section>
@@ -490,6 +808,13 @@
     </div>
 
     <script type="module">
+        const isSwitchType = type => type === 'switch';
+        const getSwitchPairs = component => [{
+            a: component.terminals[0],
+            b: component.terminals[1],
+            closed: component.properties.closed
+        }];
+
         class CircuitModel {
             constructor() {
                 this.components = new Map();
@@ -512,12 +837,19 @@
 
             createTerminals(type, componentId) {
                 const terminals = [];
-                if (type === 'battery') {
+                if (type === 'battery' || type === 'acSource') {
                     terminals.push(
                         { id: `${componentId}_pos`, componentId, type: 'positive', position: { x: 40, y: 0 } },
                         { id: `${componentId}_neg`, componentId, type: 'negative', position: { x: 40, y: 80 } }
                     );
-                } else if (type === 'resistor' || type === 'switch' || type === 'bulb') {
+                } else if (type === 'utilityBox') {
+                    terminals.push(
+                        { id: `${componentId}_t1`, componentId, type: 'terminal1', position: { x: 0, y: 16 } },
+                        { id: `${componentId}_t2`, componentId, type: 'terminal2', position: { x: 60, y: 16 } },
+                        { id: `${componentId}_t3`, componentId, type: 'terminal3', position: { x: 0, y: 44 } },
+                        { id: `${componentId}_t4`, componentId, type: 'terminal4', position: { x: 60, y: 44 } }
+                    );
+                } else if (type === 'resistor' || type === 'switch' || type === 'bulb' || type === 'appliance') {
                     terminals.push(
                         { id: `${componentId}_t1`, componentId, type: 'terminal1', position: { x: 0, y: 20 } },
                         { id: `${componentId}_t2`, componentId, type: 'terminal2', position: { x: 80, y: 20 } }
@@ -606,13 +938,17 @@
                         if (!graph.has(terminal.id)) graph.set(terminal.id, []);
                     }
 
-                    if (component.type === 'resistor' || component.type === 'bulb') {
+                    if (component.type === 'resistor' || component.type === 'bulb' || component.type === 'appliance') {
                         const [a, b] = component.terminals;
                         if (a && b) connect(a.id, b.id);
-                    } else if (component.type === 'switch') {
-                        if (includeSwitches || component.properties.closed) {
-                            const [a, b] = component.terminals;
-                            if (a && b) connect(a.id, b.id);
+                    } else if (component.type === 'utilityBox') {
+                        const [first, ...others] = component.terminals;
+                        for (const terminal of others) connect(first.id, terminal.id);
+                    } else if (isSwitchType(component.type)) {
+                        for (const pair of getSwitchPairs(component)) {
+                            if (includeSwitches || pair.closed) {
+                                if (pair.a && pair.b) connect(pair.a.id, pair.b.id);
+                            }
                         }
                     }
                 }
@@ -667,158 +1003,624 @@
                     current: null,
                     totalResistance: null,
                     power: null,
+                    apparentPower: null,
+                    powerFactor: null,
+                    frequency: null,
+                    sourceType: 'dc',
                     componentResults: new Map(),
                     warnings: [],
                     shortCircuit: false,
                     openCircuit: false
                 };
 
+                const acSources = Array.from(this.model.components.values()).filter(c => c.type === 'acSource');
                 const batteries = Array.from(this.model.components.values()).filter(c => c.type === 'battery');
-                
+                if (acSources.length > 0) {
+                    if (batteries.length > 0) {
+                        result.warnings.push('mixed_source_types_unsupported');
+                        return result;
+                    }
+                    return this.solveAC(result, acSources);
+                }
+
                 if (batteries.length === 0) {
                     result.warnings.push('no_source');
                     return result;
                 }
-
-                if (batteries.length > 1) {
-                    result.warnings.push('multiple_sources');
+                if (Array.from(this.model.components.values()).some(c => c.type === 'appliance')) {
+                    result.warnings.push('appliance_requires_ac');
                     return result;
                 }
 
-                const battery = batteries[0];
-                const voltage = parseFloat(battery.properties.voltage);
-
-                if (!isFinite(voltage) || isNaN(voltage)) {
-                    result.warnings.push('invalid_voltage');
+                const source = this.resolveSource(batteries);
+                if (source.error) {
+                    result.warnings.push(source.error);
                     return result;
                 }
 
+                const { voltage, positiveTerminal: batteryPosTerminal, negativeTerminal: batteryNegTerminal } = source;
                 result.voltage = voltage;
-
-                const batteryPosTerminal = battery.terminals.find(t => t.type === 'positive');
-                const batteryNegTerminal = battery.terminals.find(t => t.type === 'negative');
 
                 if (!batteryPosTerminal || !batteryNegTerminal) {
                     result.warnings.push('invalid_battery');
                     return result;
                 }
 
-                const fullGraph = this.model.buildGraph(true);
-                const path = this.findPath(fullGraph, batteryPosTerminal.id, batteryNegTerminal.id);
-
-                if (!path) {
-                    result.openCircuit = true;
-                    result.warnings.push('open_circuit');
-                    result.current = 0;
-                    return result;
-                }
-
-                const reachableNodes = this.getReachableNodes(fullGraph, batteryPosTerminal.id);
-                let isBranching = false;
-
-                for (const nodeId of reachableNodes) {
-                    const degree = (fullGraph.get(nodeId) || []).length;
-                    if (nodeId === batteryPosTerminal.id || nodeId === batteryNegTerminal.id) {
-                        if (degree > 1) {
-                            isBranching = true;
-                            break;
-                        }
-                    } else {
-                        if (degree > 2) {
-                            isBranching = true;
-                            break;
-                        }
+                const parent = new Map();
+                const findRoot = (id) => {
+                    if (!parent.has(id)) parent.set(id, id);
+                    let root = id;
+                    while (parent.get(root) !== root) root = parent.get(root);
+                    let curr = id;
+                    while (parent.get(curr) !== curr) {
+                        const next = parent.get(curr);
+                        parent.set(curr, root);
+                        curr = next;
                     }
+                    return root;
+                };
+                const union = (a, b) => {
+                    const rootA = findRoot(a);
+                    const rootB = findRoot(b);
+                    if (rootA !== rootB) parent.set(rootB, rootA);
+                };
+
+                for (const component of this.model.components.values()) {
+                    for (const terminal of component.terminals) findRoot(terminal.id);
                 }
+                for (const wire of this.model.wires) union(wire.from, wire.to);
 
-                if (isBranching) {
-                    result.topology = 'unsupported';
-                    result.warnings.push('unsupported_parallel_topology');
-                    return result;
-                }
-
-                const componentsInPath = this.getComponentsInPath(path);
-
-                for (const comp of componentsInPath) {
-                    if (comp.type === 'switch' && !comp.properties.closed) {
-                        result.openCircuit = true;
-                        result.warnings.push('switch_open');
-                        result.current = 0;
-                        return result;
-                    }
-                }
-
-                let totalResistance = 0;
-                let hasInvalidResistance = false;
-                let hasZeroResistance = true;
-
-                for (const comp of componentsInPath) {
-                    if (comp.type === 'battery' || comp.type === 'switch') continue;
-
-                    if (comp.type === 'resistor' || comp.type === 'bulb') {
-                        const resistance = parseFloat(comp.properties.resistance);
-                        if (!isFinite(resistance) || isNaN(resistance) || resistance < 0) {
-                            hasInvalidResistance = true;
+                const resistors = [];
+                for (const component of this.model.components.values()) {
+                    if (component.type === 'utilityBox') {
+                        const [first, ...others] = component.terminals;
+                        for (const terminal of others) union(first.id, terminal.id);
+                    } else if (isSwitchType(component.type)) {
+                        for (const pair of getSwitchPairs(component)) {
+                            if (pair.closed && pair.a && pair.b) union(pair.a.id, pair.b.id);
+                        }
+                    } else if (component.type === 'resistor' || component.type === 'bulb') {
+                        const resistance = parseFloat(component.properties.resistance);
+                        if (!Number.isFinite(resistance) || resistance < 0) {
                             result.warnings.push('invalid_resistance');
-                            break;
+                            return result;
                         }
-                        if (resistance > 0) {
-                            hasZeroResistance = false;
-                            totalResistance += resistance;
+                        const [a, b] = component.terminals;
+                        if (a && b) {
+                            if (resistance === 0) union(a.id, b.id);
+                            else resistors.push({ component, a: a.id, b: b.id, resistance });
                         }
                     }
                 }
 
-                if (hasInvalidResistance) {
-                    return result;
-                }
-
-                if (hasZeroResistance || totalResistance === 0) {
+                const positiveNode = findRoot(batteryPosTerminal.id);
+                const negativeNode = findRoot(batteryNegTerminal.id);
+                if (positiveNode === negativeNode) {
                     result.shortCircuit = true;
                     result.warnings.push('short_circuit');
                     return result;
                 }
 
-                result.totalResistance = totalResistance;
-                result.current = voltage / totalResistance;
-                result.power = voltage * result.current;
-                result.valid = true;
-                result.topology = 'series';
+                const edges = resistors.map(edge => ({
+                    ...edge,
+                    nodeA: findRoot(edge.a),
+                    nodeB: findRoot(edge.b)
+                })).filter(edge => edge.nodeA !== edge.nodeB);
+                const adjacency = new Map();
+                const addNeighbor = (a, b) => {
+                    if (!adjacency.has(a)) adjacency.set(a, new Set());
+                    if (!adjacency.has(b)) adjacency.set(b, new Set());
+                    adjacency.get(a).add(b);
+                    adjacency.get(b).add(a);
+                };
+                for (const edge of edges) addNeighbor(edge.nodeA, edge.nodeB);
 
-                for (const comp of componentsInPath) {
-                    if (comp.type === 'resistor' || comp.type === 'bulb') {
-                        const resistance = parseFloat(comp.properties.resistance);
-                        const voltageDrop = result.current * resistance;
-                        const power = result.current * result.current * resistance;
-                        
-                        result.componentResults.set(comp.id, {
-                            voltage: voltageDrop,
-                            current: result.current,
-                            power: power
-                        });
-                    }
-                }
-
-                result.path = path;
-                return result;
-            }
-
-            getReachableNodes(graph, startNode) {
-                const visited = new Set();
-                const queue = [startNode];
-                visited.add(startNode);
-
-                while (queue.length > 0) {
-                    const curr = queue.shift();
-                    const neighbors = graph.get(curr) || [];
-                    for (const neighbor of neighbors) {
-                        if (!visited.has(neighbor)) {
-                            visited.add(neighbor);
-                            queue.push(neighbor);
+                const reachable = new Set([positiveNode]);
+                const queue = [positiveNode];
+                while (queue.length) {
+                    const node = queue.shift();
+                    for (const next of adjacency.get(node) || []) {
+                        if (!reachable.has(next)) {
+                            reachable.add(next);
+                            queue.push(next);
                         }
                     }
                 }
-                return visited;
+                if (!reachable.has(negativeNode)) {
+                    result.openCircuit = true;
+                    const possiblePath = this.findPath(this.model.buildGraph(true), batteryPosTerminal.id, batteryNegTerminal.id);
+                    const pathComponents = possiblePath ? this.getComponentsInPath(possiblePath) : [];
+                    const blockedByOpenSwitch = pathComponents.some(comp =>
+                        isSwitchType(comp.type) && getSwitchPairs(comp).some(pair => !pair.closed)
+                    );
+                    result.warnings.push(blockedByOpenSwitch ? 'switch_open' : 'open_circuit');
+                    result.current = 0;
+                    return result;
+                }
+
+                const activeEdges = edges.filter(edge => reachable.has(edge.nodeA) && reachable.has(edge.nodeB));
+                const nodes = Array.from(reachable);
+                const unknownNodes = nodes.filter(node => node !== positiveNode && node !== negativeNode);
+                const unknownIndex = new Map(unknownNodes.map((node, index) => [node, index]));
+                const solvePotentials = (sourceVoltage) => {
+                    const size = unknownNodes.length;
+                    const matrix = Array.from({ length: size }, () => Array(size).fill(0));
+                    const rhs = Array(size).fill(0);
+                    for (const edge of activeEdges) {
+                        const conductance = 1 / edge.resistance;
+                        const indexA = unknownIndex.get(edge.nodeA);
+                        const indexB = unknownIndex.get(edge.nodeB);
+                        if (indexA !== undefined) matrix[indexA][indexA] += conductance;
+                        if (indexB !== undefined) matrix[indexB][indexB] += conductance;
+                        if (indexA !== undefined && indexB !== undefined) {
+                            matrix[indexA][indexB] -= conductance;
+                            matrix[indexB][indexA] -= conductance;
+                        } else if (indexA !== undefined && edge.nodeB === positiveNode) {
+                            rhs[indexA] += conductance * sourceVoltage;
+                        } else if (indexB !== undefined && edge.nodeA === positiveNode) {
+                            rhs[indexB] += conductance * sourceVoltage;
+                        }
+                    }
+                    const values = this.solveLinearSystem(matrix, rhs);
+                    if (!values) return null;
+                    const potentials = new Map([[positiveNode, sourceVoltage], [negativeNode, 0]]);
+                    unknownNodes.forEach((node, index) => potentials.set(node, values[index]));
+                    return potentials;
+                };
+
+                const potentials = solvePotentials(voltage);
+                const unitPotentials = solvePotentials(1);
+                if (!potentials || !unitPotentials) {
+                    result.warnings.push('solver_error');
+                    return result;
+                }
+                const sourceCurrent = (voltageValue, values) => activeEdges
+                    .filter(edge => edge.nodeA === positiveNode || edge.nodeB === positiveNode)
+                    .reduce((sum, edge) => {
+                        const otherNode = edge.nodeA === positiveNode ? edge.nodeB : edge.nodeA;
+                        return sum + (voltageValue - values.get(otherNode)) / edge.resistance;
+                    }, 0);
+                const unitCurrent = sourceCurrent(1, unitPotentials);
+                if (!(unitCurrent > 0) || !Number.isFinite(unitCurrent)) {
+                    result.warnings.push('solver_error');
+                    return result;
+                }
+
+                result.totalResistance = 1 / unitCurrent;
+                result.current = Math.abs(sourceCurrent(voltage, potentials));
+                result.power = Math.abs(voltage) * result.current;
+                result.apparentPower = result.power;
+                result.powerFactor = 1;
+                result.valid = true;
+                const flowingEdges = activeEdges.filter(edge =>
+                    Math.abs(potentials.get(edge.nodeA) - potentials.get(edge.nodeB)) > 1e-12
+                );
+                result.topology = this.classifyTopology(
+                    flowingEdges.length ? flowingEdges : activeEdges,
+                    positiveNode,
+                    negativeNode
+                );
+
+                for (const edge of activeEdges) {
+                    const voltageDrop = Math.abs(potentials.get(edge.nodeA) - potentials.get(edge.nodeB));
+                    const current = voltageDrop / edge.resistance;
+                    result.componentResults.set(edge.component.id, {
+                        voltage: voltageDrop,
+                        current,
+                        power: voltageDrop * current
+                    });
+                }
+
+                result.paths = this.findAllPaths(this.model.buildGraph(false), batteryPosTerminal.id, batteryNegTerminal.id);
+                result.path = result.paths[0] || null;
+                return result;
+            }
+
+            solveAC(result, sources) {
+                result.sourceType = 'ac';
+                if (sources.length !== 1) {
+                    result.warnings.push('multiple_ac_sources_unsupported');
+                    return result;
+                }
+                const source = sources[0];
+                const voltage = parseFloat(source.properties.voltageRms);
+                const frequency = parseFloat(source.properties.frequency);
+                const positiveTerminal = source.terminals?.find(t => t.type === 'positive');
+                const negativeTerminal = source.terminals?.find(t => t.type === 'negative');
+                if (!Number.isFinite(voltage) || voltage <= 0 || !Number.isFinite(frequency) || frequency <= 0) {
+                    result.warnings.push('invalid_ac_source');
+                    return result;
+                }
+                if (!positiveTerminal || !negativeTerminal) {
+                    result.warnings.push('invalid_battery');
+                    return result;
+                }
+                result.voltage = voltage;
+                result.frequency = frequency;
+
+                const parent = new Map();
+                const findRoot = (id) => {
+                    if (!parent.has(id)) parent.set(id, id);
+                    let root = id;
+                    while (parent.get(root) !== root) root = parent.get(root);
+                    let curr = id;
+                    while (parent.get(curr) !== curr) {
+                        const next = parent.get(curr);
+                        parent.set(curr, root);
+                        curr = next;
+                    }
+                    return root;
+                };
+                const union = (a, b) => {
+                    const rootA = findRoot(a);
+                    const rootB = findRoot(b);
+                    if (rootA !== rootB) parent.set(rootB, rootA);
+                };
+                for (const component of this.model.components.values()) {
+                    for (const terminal of component.terminals) findRoot(terminal.id);
+                }
+                for (const wire of this.model.wires) union(wire.from, wire.to);
+                for (const component of this.model.components.values()) {
+                    if (component.type === 'utilityBox') {
+                        const [first, ...others] = component.terminals;
+                        for (const terminal of others) union(first.id, terminal.id);
+                    } else if (isSwitchType(component.type)) {
+                        for (const pair of getSwitchPairs(component)) {
+                            if (pair.closed && pair.a && pair.b) union(pair.a.id, pair.b.id);
+                        }
+                    }
+                }
+
+                const edges = [];
+                for (const component of this.model.components.values()) {
+                    const [a, b] = component.terminals || [];
+                    if (!a || !b) continue;
+                    let impedance;
+                    if (component.type === 'resistor' || component.type === 'bulb') {
+                        const resistance = parseFloat(component.properties.resistance);
+                        if (!Number.isFinite(resistance) || resistance < 0) {
+                            result.warnings.push('invalid_resistance');
+                            return result;
+                        }
+                        if (resistance === 0) {
+                            union(a.id, b.id);
+                            continue;
+                        }
+                        impedance = { re: resistance, im: 0 };
+                    } else if (component.type === 'appliance') {
+                        const ratedVoltage = parseFloat(component.properties.ratedVoltage);
+                        const ratedPower = parseFloat(component.properties.ratedPower);
+                        const powerFactor = parseFloat(component.properties.powerFactor);
+                        if (!Number.isFinite(ratedVoltage) || ratedVoltage <= 0 ||
+                            !Number.isFinite(ratedPower) || ratedPower <= 0 ||
+                            !Number.isFinite(powerFactor) || powerFactor <= 0 || powerFactor > 1) {
+                            result.warnings.push('invalid_appliance_rating');
+                            return result;
+                        }
+                        const magnitude = ratedVoltage * ratedVoltage * powerFactor / ratedPower;
+                        impedance = {
+                            re: magnitude * powerFactor,
+                            im: magnitude * Math.sqrt(Math.max(0, 1 - powerFactor * powerFactor))
+                        };
+                    } else {
+                        continue;
+                    }
+                    edges.push({ component, a: a.id, b: b.id, impedance });
+                }
+
+                const positiveNode = findRoot(positiveTerminal.id);
+                const negativeNode = findRoot(negativeTerminal.id);
+                if (positiveNode === negativeNode) {
+                    result.shortCircuit = true;
+                    result.warnings.push('short_circuit');
+                    return result;
+                }
+                for (const edge of edges) {
+                    edge.nodeA = findRoot(edge.a);
+                    edge.nodeB = findRoot(edge.b);
+                }
+                const activeEdges = edges.filter(edge => edge.nodeA !== edge.nodeB);
+                const adjacency = new Map();
+                const connect = (a, b) => {
+                    if (!adjacency.has(a)) adjacency.set(a, new Set());
+                    if (!adjacency.has(b)) adjacency.set(b, new Set());
+                    adjacency.get(a).add(b);
+                    adjacency.get(b).add(a);
+                };
+                activeEdges.forEach(edge => connect(edge.nodeA, edge.nodeB));
+                const reachable = new Set([positiveNode]);
+                const queue = [positiveNode];
+                while (queue.length) {
+                    const node = queue.shift();
+                    for (const next of adjacency.get(node) || []) {
+                        if (!reachable.has(next)) {
+                            reachable.add(next);
+                            queue.push(next);
+                        }
+                    }
+                }
+                if (!reachable.has(negativeNode)) {
+                    result.openCircuit = true;
+                    const path = this.findPath(this.model.buildGraph(true), positiveTerminal.id, negativeTerminal.id);
+                    const pathComponents = path ? this.getComponentsInPath(path) : [];
+                    result.warnings.push(pathComponents.some(comp => isSwitchType(comp.type) && getSwitchPairs(comp).some(pair => !pair.closed))
+                        ? 'switch_open'
+                        : 'open_circuit');
+                    result.current = 0;
+                    return result;
+                }
+                const conductingEdges = activeEdges.filter(edge => reachable.has(edge.nodeA) && reachable.has(edge.nodeB));
+                const nodes = Array.from(reachable);
+                const unknownNodes = nodes.filter(node => node !== positiveNode && node !== negativeNode);
+                const unknownIndex = new Map(unknownNodes.map((node, index) => [node, index]));
+                const zero = () => ({ re: 0, im: 0 });
+                const add = (a, b) => ({ re: a.re + b.re, im: a.im + b.im });
+                const sub = (a, b) => ({ re: a.re - b.re, im: a.im - b.im });
+                const mul = (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
+                const div = (a, b) => {
+                    const denominator = b.re * b.re + b.im * b.im;
+                    return { re: (a.re * b.re + a.im * b.im) / denominator, im: (a.im * b.re - a.re * b.im) / denominator };
+                };
+                const magnitude = a => Math.hypot(a.re, a.im);
+                const conjugate = a => ({ re: a.re, im: -a.im });
+                const solvePotentials = sourceVoltage => {
+                    const size = unknownNodes.length;
+                    const matrix = Array.from({ length: size }, () => Array.from({ length: size }, zero));
+                    const rhs = Array.from({ length: size }, zero);
+                    for (const edge of conductingEdges) {
+                        const admittance = div({ re: 1, im: 0 }, edge.impedance);
+                        const indexA = unknownIndex.get(edge.nodeA);
+                        const indexB = unknownIndex.get(edge.nodeB);
+                        if (indexA !== undefined) matrix[indexA][indexA] = add(matrix[indexA][indexA], admittance);
+                        if (indexB !== undefined) matrix[indexB][indexB] = add(matrix[indexB][indexB], admittance);
+                        if (indexA !== undefined && indexB !== undefined) {
+                            matrix[indexA][indexB] = sub(matrix[indexA][indexB], admittance);
+                            matrix[indexB][indexA] = sub(matrix[indexB][indexA], admittance);
+                        } else if (indexA !== undefined && edge.nodeB === positiveNode) {
+                            rhs[indexA] = add(rhs[indexA], mul(admittance, { re: sourceVoltage, im: 0 }));
+                        } else if (indexB !== undefined && edge.nodeA === positiveNode) {
+                            rhs[indexB] = add(rhs[indexB], mul(admittance, { re: sourceVoltage, im: 0 }));
+                        }
+                    }
+                    const values = this.solveComplexLinearSystem(matrix, rhs, add, sub, mul, div, magnitude);
+                    if (!values) return null;
+                    const potentials = new Map([[positiveNode, { re: sourceVoltage, im: 0 }], [negativeNode, zero()]]);
+                    unknownNodes.forEach((node, index) => potentials.set(node, values[index]));
+                    return potentials;
+                };
+                const potentials = solvePotentials(voltage);
+                const unitPotentials = solvePotentials(1);
+                if (!potentials || !unitPotentials) {
+                    result.warnings.push('solver_error');
+                    return result;
+                }
+                const sourceCurrent = (values, sourceVoltage) => conductingEdges
+                    .filter(edge => edge.nodeA === positiveNode || edge.nodeB === positiveNode)
+                    .reduce((sum, edge) => {
+                        const otherNode = edge.nodeA === positiveNode ? edge.nodeB : edge.nodeA;
+                        const branchVoltage = sub(values.get(positiveNode), values.get(otherNode));
+                        const branchCurrent = div(branchVoltage, edge.impedance);
+                        return add(sum, branchCurrent);
+                    }, zero());
+                const unitCurrent = sourceCurrent(unitPotentials, 1);
+                if (!(magnitude(unitCurrent) > 0) || !Number.isFinite(magnitude(unitCurrent))) {
+                    result.warnings.push('solver_error');
+                    return result;
+                }
+                const equivalentImpedance = div({ re: 1, im: 0 }, unitCurrent);
+                result.totalResistance = magnitude(equivalentImpedance);
+                result.current = magnitude(sourceCurrent(potentials, voltage));
+                result.apparentPower = voltage * result.current;
+                result.power = 0;
+                for (const edge of conductingEdges) {
+                    const voltageDrop = sub(potentials.get(edge.nodeA), potentials.get(edge.nodeB));
+                    const currentPhasor = div(voltageDrop, edge.impedance);
+                    const voltageMagnitude = magnitude(voltageDrop);
+                    const currentMagnitude = magnitude(currentPhasor);
+                    const complexPower = mul(voltageDrop, conjugate(currentPhasor));
+                    const realPower = Math.max(0, complexPower.re);
+                    result.power += realPower;
+                    result.componentResults.set(edge.component.id, {
+                        voltage: voltageMagnitude,
+                        current: currentMagnitude,
+                        power: realPower,
+                        powerFactor: voltageMagnitude * currentMagnitude > 0
+                            ? realPower / (voltageMagnitude * currentMagnitude)
+                            : 1
+                    });
+                }
+                result.powerFactor = result.apparentPower > 0 ? result.power / result.apparentPower : 1;
+                result.valid = true;
+                const flowingEdges = conductingEdges.filter(edge =>
+                    magnitude(sub(potentials.get(edge.nodeA), potentials.get(edge.nodeB))) > 1e-12
+                );
+                result.topology = this.classifyTopology(
+                    flowingEdges.length ? flowingEdges : conductingEdges,
+                    positiveNode,
+                    negativeNode
+                );
+                result.paths = this.findAllPaths(this.model.buildGraph(false), positiveTerminal.id, negativeTerminal.id);
+                result.path = result.paths[0] || null;
+                return result;
+            }
+
+            solveComplexLinearSystem(matrix, rhs, add, sub, mul, div, magnitude) {
+                const size = rhs.length;
+                if (size === 0) return [];
+                const rows = matrix.map((row, index) => [...row, { ...rhs[index] }]);
+                for (let column = 0; column < size; column++) {
+                    let pivot = column;
+                    for (let row = column + 1; row < size; row++) {
+                        if (magnitude(rows[row][column]) > magnitude(rows[pivot][column])) pivot = row;
+                    }
+                    if (magnitude(rows[pivot][column]) < 1e-15) return null;
+                    [rows[column], rows[pivot]] = [rows[pivot], rows[column]];
+                    const divisor = rows[column][column];
+                    for (let j = column; j <= size; j++) rows[column][j] = div(rows[column][j], divisor);
+                    for (let row = 0; row < size; row++) {
+                        if (row === column) continue;
+                        const factor = rows[row][column];
+                        for (let j = column; j <= size; j++) {
+                            rows[row][j] = sub(rows[row][j], mul(factor, rows[column][j]));
+                        }
+                    }
+                }
+                return rows.map(row => row[size]);
+            }
+
+            resolveSource(batteries) {
+                const sources = [];
+                for (const battery of batteries) {
+                    const voltage = parseFloat(battery.properties.voltage);
+                    const positiveTerminal = battery.terminals?.find(t => t.type === 'positive');
+                    const negativeTerminal = battery.terminals?.find(t => t.type === 'negative');
+                    if (!Number.isFinite(voltage)) return { error: 'invalid_voltage' };
+                    if (!positiveTerminal || !negativeTerminal) return { error: 'invalid_battery' };
+                    sources.push({ battery, voltage, positiveTerminal, negativeTerminal });
+                }
+                if (sources.length === 1) {
+                    return {
+                        voltage: sources[0].voltage,
+                        positiveTerminal: sources[0].positiveTerminal,
+                        negativeTerminal: sources[0].negativeTerminal
+                    };
+                }
+
+                const parent = new Map();
+                const findRoot = (id) => {
+                    if (!parent.has(id)) parent.set(id, id);
+                    let root = id;
+                    while (parent.get(root) !== root) root = parent.get(root);
+                    let curr = id;
+                    while (parent.get(curr) !== curr) {
+                        const next = parent.get(curr);
+                        parent.set(curr, root);
+                        curr = next;
+                    }
+                    return root;
+                };
+                const union = (a, b) => {
+                    const rootA = findRoot(a);
+                    const rootB = findRoot(b);
+                    if (rootA !== rootB) parent.set(rootB, rootA);
+                };
+                for (const component of this.model.components.values()) {
+                    for (const terminal of component.terminals) findRoot(terminal.id);
+                }
+                for (const wire of this.model.wires) union(wire.from, wire.to);
+                for (const component of this.model.components.values()) {
+                    if (isSwitchType(component.type)) {
+                        for (const pair of getSwitchPairs(component)) {
+                            if (pair.closed && pair.a && pair.b) union(pair.a.id, pair.b.id);
+                        }
+                    }
+                }
+
+                const sourceEdges = sources.map(source => ({
+                    positive: findRoot(source.positiveTerminal.id),
+                    negative: findRoot(source.negativeTerminal.id),
+                    voltage: source.voltage
+                }));
+                const adjacency = new Map();
+                for (const edge of sourceEdges) {
+                    if (edge.positive === edge.negative && Math.abs(edge.voltage) > 1e-9) {
+                        return { error: 'incompatible_sources' };
+                    }
+                    if (!adjacency.has(edge.positive)) adjacency.set(edge.positive, []);
+                    if (!adjacency.has(edge.negative)) adjacency.set(edge.negative, []);
+                    adjacency.get(edge.positive).push({ edge, next: edge.negative, direction: 1 });
+                    adjacency.get(edge.negative).push({ edge, next: edge.positive, direction: -1 });
+                }
+
+                const first = sourceEdges[0];
+                const offsets = new Map([[first.positive, 0]]);
+                const queue = [first.positive];
+                while (queue.length) {
+                    const node = queue.shift();
+                    for (const link of adjacency.get(node) || []) {
+                        const expected = offsets.get(node) - link.direction * link.edge.voltage;
+                        if (!offsets.has(link.next)) {
+                            offsets.set(link.next, expected);
+                            queue.push(link.next);
+                        } else if (Math.abs(offsets.get(link.next) - expected) > 1e-9) {
+                            return { error: 'incompatible_sources' };
+                        }
+                    }
+                }
+                if (offsets.size !== adjacency.size) return { error: 'unsupported_source_topology' };
+
+                const sourceNodes = Array.from(adjacency.keys());
+                let endpoints;
+                if (sourceNodes.length === 2) {
+                    endpoints = sourceNodes;
+                } else {
+                    const degree = sourceNodes.map(node => [node, (adjacency.get(node) || []).length]);
+                    endpoints = degree.filter(([, value]) => value === 1).map(([node]) => node);
+                    const isSeriesChain = endpoints.length === 2 && sourceEdges.length === sourceNodes.length - 1 &&
+                        degree.every(([, value]) => value === 1 || value === 2);
+                    if (!isSeriesChain) return { error: 'unsupported_source_topology' };
+                    const internalNodes = new Set(sourceNodes.filter(node => !endpoints.includes(node)));
+                    for (const component of this.model.components.values()) {
+                        if (component.type !== 'resistor' && component.type !== 'bulb') continue;
+                        if (component.terminals.some(terminal => internalNodes.has(findRoot(terminal.id)))) {
+                            return { error: 'unsupported_source_topology' };
+                        }
+                    }
+                }
+
+                const highNode = offsets.get(endpoints[0]) >= offsets.get(endpoints[1]) ? endpoints[0] : endpoints[1];
+                const lowNode = highNode === endpoints[0] ? endpoints[1] : endpoints[0];
+                const terminalFor = (node, type) => sources
+                    .flatMap(source => [source.positiveTerminal, source.negativeTerminal])
+                    .find(terminal => findRoot(terminal.id) === node && terminal.type === type);
+                const positiveTerminal = terminalFor(highNode, 'positive') || terminalFor(highNode, 'negative');
+                const negativeTerminal = terminalFor(lowNode, 'negative') || terminalFor(lowNode, 'positive');
+                if (!positiveTerminal || !negativeTerminal) return { error: 'invalid_battery' };
+                return {
+                    voltage: Math.abs(offsets.get(highNode) - offsets.get(lowNode)),
+                    positiveTerminal,
+                    negativeTerminal
+                };
+            }
+
+            solveLinearSystem(matrix, rhs) {
+                const size = rhs.length;
+                if (size === 0) return [];
+                const rows = matrix.map((row, index) => [...row, rhs[index]]);
+                for (let column = 0; column < size; column++) {
+                    let pivot = column;
+                    for (let row = column + 1; row < size; row++) {
+                        if (Math.abs(rows[row][column]) > Math.abs(rows[pivot][column])) pivot = row;
+                    }
+                    if (Math.abs(rows[pivot][column]) < 1e-15) return null;
+                    [rows[column], rows[pivot]] = [rows[pivot], rows[column]];
+                    const divisor = rows[column][column];
+                    for (let j = column; j <= size; j++) rows[column][j] /= divisor;
+                    for (let row = 0; row < size; row++) {
+                        if (row === column) continue;
+                        const factor = rows[row][column];
+                        for (let j = column; j <= size; j++) rows[row][j] -= factor * rows[column][j];
+                    }
+                }
+                return rows.map(row => row[size]);
+            }
+
+            classifyTopology(edges, positiveNode, negativeNode) {
+                if (edges.length > 1 && edges.every(edge =>
+                    (edge.nodeA === positiveNode && edge.nodeB === negativeNode) ||
+                    (edge.nodeA === negativeNode && edge.nodeB === positiveNode)
+                )) return 'parallel';
+                const degree = new Map();
+                const nodes = new Set();
+                for (const edge of edges) {
+                    nodes.add(edge.nodeA);
+                    nodes.add(edge.nodeB);
+                    degree.set(edge.nodeA, (degree.get(edge.nodeA) || 0) + 1);
+                    degree.set(edge.nodeB, (degree.get(edge.nodeB) || 0) + 1);
+                }
+                const hasBranch = Array.from(degree.values()).some(value => value > 2);
+                const hasParallelLoop = edges.length >= nodes.size;
+                return hasBranch || hasParallelLoop ? 'mixed' : 'series';
             }
 
             findPath(graph, start, end) {
@@ -845,6 +1647,26 @@
                 }
 
                 return null;
+            }
+
+            findAllPaths(graph, start, end, limit = 32) {
+                const paths = [];
+                const visit = (node, path, visited) => {
+                    if (paths.length >= limit) return;
+                    if (node === end) {
+                        paths.push(path);
+                        return;
+                    }
+                    for (const neighbor of graph.get(node) || []) {
+                        if (visited.has(neighbor)) continue;
+                        const nextVisited = new Set(visited);
+                        nextVisited.add(neighbor);
+                        visit(neighbor, [...path, neighbor], nextVisited);
+                        if (paths.length >= limit) return;
+                    }
+                };
+                visit(start, [start], new Set([start]));
+                return paths;
             }
 
             getComponentsInPath(path) {
@@ -901,6 +1723,7 @@
                 }
 
                 elements.forEach(el => this.svg.appendChild(el));
+                this.svg.querySelectorAll('.current-particle').forEach(particle => this.svg.appendChild(particle));
             }
 
             createWire(wire, fromPos, toPos, selected) {
@@ -940,12 +1763,18 @@
 
                 if (component.type === 'battery') {
                     this.drawBattery(group, component);
+                } else if (component.type === 'acSource') {
+                    this.drawACSource(group, component);
                 } else if (component.type === 'resistor') {
                     this.drawResistor(group, component);
                 } else if (component.type === 'switch') {
                     this.drawSwitch(group, component);
+                } else if (component.type === 'utilityBox') {
+                    this.drawUtilityBox(group, component);
                 } else if (component.type === 'bulb') {
                     this.drawBulb(group, component);
+                } else if (component.type === 'appliance') {
+                    this.drawAppliance(group, component);
                 }
 
                 for (const terminal of component.terminals) {
@@ -1006,6 +1835,53 @@
                 text.setAttribute('fill', '#e8eaf0');
                 text.setAttribute('font-size', '10');
                 text.textContent = `${component.properties.voltage}V`;
+                group.appendChild(text);
+            }
+
+            drawACSource(group, component) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', 40);
+                circle.setAttribute('cy', 40);
+                circle.setAttribute('r', 24);
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', '#ffb020');
+                circle.setAttribute('stroke-width', 2);
+                group.appendChild(circle);
+                const wave = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                wave.setAttribute('d', 'M 24 40 C 28 28, 32 28, 36 40 S 44 52, 48 40 S 56 28, 60 40');
+                wave.setAttribute('fill', 'none');
+                wave.setAttribute('stroke', '#ffb020');
+                wave.setAttribute('stroke-width', 2);
+                group.appendChild(wave);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', 40);
+                text.setAttribute('y', 73);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', '#e8eaf0');
+                text.setAttribute('font-size', '9');
+                text.textContent = component.properties.voltageRms ? `${component.properties.voltageRms}V~` : 'AC';
+                group.appendChild(text);
+            }
+
+            drawAppliance(group, component) {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', 17);
+                rect.setAttribute('y', 2);
+                rect.setAttribute('width', 46);
+                rect.setAttribute('height', 36);
+                rect.setAttribute('rx', 4);
+                rect.setAttribute('fill', 'none');
+                rect.setAttribute('stroke', '#9b7bff');
+                rect.setAttribute('stroke-width', 2);
+                rect.dataset.appliance = component.id;
+                group.appendChild(rect);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', 40);
+                text.setAttribute('y', 24);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', '#e8eaf0');
+                text.setAttribute('font-size', '9');
+                text.textContent = component.properties.ratedPower ? `${component.properties.ratedPower}W` : 'LOAD';
                 group.appendChild(text);
             }
 
@@ -1073,6 +1949,37 @@
                 group.appendChild(text);
             }
 
+            drawUtilityBox(group) {
+                const box = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                box.setAttribute('x', 0);
+                box.setAttribute('y', 0);
+                box.setAttribute('width', 60);
+                box.setAttribute('height', 60);
+                box.setAttribute('rx', 7);
+                box.setAttribute('fill', 'rgba(74, 158, 255, 0.12)');
+                box.setAttribute('stroke', '#4a9eff');
+                box.setAttribute('stroke-width', 2);
+                group.appendChild(box);
+
+                const splice = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                splice.setAttribute('cx', 30);
+                splice.setAttribute('cy', 30);
+                splice.setAttribute('r', 5);
+                splice.setAttribute('fill', '#4a9eff');
+                group.appendChild(splice);
+
+                for (const [x1, y1, x2, y2] of [[0, 16, 30, 30], [60, 16, 30, 30], [0, 44, 30, 30], [60, 44, 30, 30]]) {
+                    const conductor = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    conductor.setAttribute('x1', x1);
+                    conductor.setAttribute('y1', y1);
+                    conductor.setAttribute('x2', x2);
+                    conductor.setAttribute('y2', y2);
+                    conductor.setAttribute('stroke', '#a8aec0');
+                    conductor.setAttribute('stroke-width', 2);
+                    group.appendChild(conductor);
+                }
+            }
+
             drawBulb(group, component) {
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', 40);
@@ -1122,6 +2029,11 @@
                     }
                 }
             }
+
+            updateApplianceState(componentId, isOn) {
+                const appliance = this.svg.querySelector(`[data-appliance="${componentId}"]`);
+                if (appliance) appliance.classList.toggle('appliance-on', Boolean(isOn));
+            }
         }
 
         class CurrentAnimator {
@@ -1130,21 +2042,27 @@
                 this.model = model;
                 this.particles = [];
                 this.animationId = null;
-                this.path = null;
+                this.paths = [];
                 this.pathKey = null;
+                this.isAC = false;
             }
 
-            start(path) {
-                if (!path || path.length < 2) {
+            start(paths, isAC = false) {
+                if (Array.isArray(paths?.[0])) this.paths = paths;
+                else if (Array.isArray(paths)) this.paths = [paths];
+                else this.paths = [];
+                this.paths = this.paths.filter(path => path.length > 1);
+                if (this.paths.length === 0) {
                     this.stop();
                     return;
                 }
-                
-                const pathKey = path.join(',');
+
+                const pathKey = `${JSON.stringify(this.paths)}:${isAC ? 'ac' : 'dc'}`;
                 if (this.pathKey !== pathKey || this.particles.length === 0) {
                     this.stop();
-                    this.path = path;
+                    this.paths = Array.isArray(paths?.[0]) ? paths.filter(path => path.length > 1) : [paths];
                     this.pathKey = pathKey;
+                    this.isAC = isAC;
                     this.createParticles();
                 } else {
                     this.updateSegments();
@@ -1166,50 +2084,51 @@
                     }
                 });
                 this.particles = [];
-                this.path = null;
+                this.paths = [];
                 this.pathKey = null;
+                this.isAC = false;
             }
 
             updateSegments() {
-                if (!this.path) return;
-                const segments = [];
-                for (let i = 0; i < this.path.length - 1; i++) {
-                    const from = this.model.getTerminalPosition(this.path[i]);
-                    const to = this.model.getTerminalPosition(this.path[i + 1]);
-                    if (from && to) {
-                        segments.push({ from, to });
+                if (!this.paths.length) return;
+                const routes = this.paths.map(path => {
+                    const segments = [];
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const from = this.model.getTerminalPosition(path[i]);
+                        const to = this.model.getTerminalPosition(path[i + 1]);
+                        if (from && to) segments.push({ from, to });
                     }
-                }
+                    return segments;
+                });
                 this.particles.forEach(p => {
-                    p.segments = segments;
+                    p.segments = routes[p.routeIndex] || [];
                 });
             }
 
             createParticles() {
-                const segments = [];
-                for (let i = 0; i < this.path.length - 1; i++) {
-                    const from = this.model.getTerminalPosition(this.path[i]);
-                    const to = this.model.getTerminalPosition(this.path[i + 1]);
-                    if (from && to) {
-                        segments.push({ from, to });
+                this.paths.forEach((path, routeIndex) => {
+                    const segments = [];
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const from = this.model.getTerminalPosition(path[i]);
+                        const to = this.model.getTerminalPosition(path[i + 1]);
+                        if (from && to) segments.push({ from, to });
                     }
-                }
-
-                if (segments.length === 0) return;
-
-                const numParticles = 5;
-                for (let i = 0; i < numParticles; i++) {
-                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    circle.setAttribute('r', '3');
-                    circle.classList.add('current-particle');
-                    this.svg.appendChild(circle);
-
-                    this.particles.push({
-                        element: circle,
-                        progress: i / numParticles,
-                        segments
-                    });
-                }
+                    if (segments.length === 0) return;
+                    const numParticles = 3;
+                    for (let i = 0; i < numParticles; i++) {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('r', '3');
+                        circle.classList.add('current-particle');
+                        this.svg.appendChild(circle);
+                        this.particles.push({
+                            element: circle,
+                            progress: i / numParticles,
+                            direction: 1,
+                            routeIndex,
+                            segments
+                        });
+                    }
+                });
             }
 
             animate() {
@@ -1222,8 +2141,11 @@
                 
                 this.particles.forEach(particle => {
                     if (!particle.segments || particle.segments.length === 0) return;
-                    particle.progress += speed;
-                    if (particle.progress >= 1) {
+                    particle.progress += speed * (this.isAC ? particle.direction : 1);
+                    if (this.isAC && (particle.progress >= 1 || particle.progress <= 0)) {
+                        particle.progress = Math.max(0, Math.min(1, particle.progress));
+                        particle.direction *= -1;
+                    } else if (!this.isAC && particle.progress >= 1) {
                         particle.progress -= 1;
                     }
 
@@ -1258,9 +2180,14 @@
                     en: {
                         'tool-select-label': 'Select',
                         'tool-battery-label': 'Battery',
+                        'tool-ac-source-label': 'AC Source',
                         'tool-resistor-label': 'Resistor',
                         'tool-switch-label': 'Switch',
+                        'tool-utility-box-label': 'Utility Box',
+                        'welcome-tagline': 'Build a circuit and watch electricity flow through it.',
+                        'welcome-start': 'Start Simulating',
                         'tool-bulb-label': 'Bulb',
+                        'tool-appliance-label': 'Appliance',
                         'tool-wire-label': 'Wire',
                         'tool-delete-label': 'Delete',
                         'new-circuit-btn': 'New Circuit',
@@ -1270,8 +2197,23 @@
                         'properties-title': 'Properties',
                         'no-selection-text': 'No component selected',
                         'component-type': 'Type',
+                        'component-type-battery': 'Battery',
+                        'component-type-acSource': 'AC Source',
+                        'component-type-appliance': 'Appliance Load',
+                        'component-type-resistor': 'Resistor',
+                        'component-type-switch': 'Switch',
+                        'component-type-utilityBox': 'Utility Box',
+                        'utility-box-connection-note': 'All four terminals connect inside the box as one junction.',
+                        'component-type-bulb': 'Bulb',
                         'voltage-property': 'Voltage (V)',
+                        'rms-voltage-property': 'AC RMS Voltage (V)',
+                        'frequency-property': 'Frequency (Hz)',
                         'resistance-property': 'Resistance (Ω)',
+                        'rated-voltage-property': 'Rated Voltage (V)',
+                        'rated-power-property': 'Rated Active Power (W)',
+                        'power-factor-property': 'Power Factor (0–1)',
+                        'operating-voltage': 'Operating Voltage',
+                        'branch-current': 'Component Current',
                         'switch-state': 'State',
                         'switch-open': 'Open',
                         'switch-closed': 'Closed',
@@ -1279,23 +2221,42 @@
                         'delete-component': 'Delete Component',
                         'measurements-title': 'Measurements',
                         'voltage-label': 'Voltage',
+                        'rms-voltage-label': 'RMS Voltage',
                         'current-label': 'Current',
+                        'rms-current-label': 'RMS Current',
                         'resistance-label': 'Resistance',
+                        'impedance-label': 'Impedance',
                         'power-label': 'Power',
+                        'active-power-label': 'Active Power',
+                        'apparent-power-label': 'Apparent Power',
+                        'power-factor-label': 'Power Factor',
+                        'impedance-label': 'Impedance',
                         'explanation-title': 'Circuit Explanation',
                         'default-explanation': 'Build a circuit to see how electricity flows',
-                        'no_source': 'No battery in circuit. Add a battery to provide voltage.',
+                        'no_source': 'No voltage source in circuit. Add a battery or AC source.',
                         'multiple_sources': 'Multiple batteries detected. This simulator supports single-source circuits.',
                         'invalid_voltage': 'Battery voltage is invalid. Please enter a valid number.',
                         'invalid_battery': 'Battery terminals are not configured correctly.',
+                        'incompatible_sources': 'Battery voltages conflict in this connection. Check their voltage and polarity.',
+                        'unsupported_source_topology': 'This battery arrangement is not supported. Connect batteries in a series string or a matching parallel bank.',
                         'open_circuit': 'The circuit path is interrupted. Current cannot flow in a broken path.',
                         'switch_open': 'The switch is open, so the conducting path is interrupted.',
-                        'unsupported_parallel_topology': 'Parallel or branching topology detected. Volt-Flow v1.1 supports single-loop series circuits only.',
                         'invalid_resistance': 'One or more components have invalid resistance values.',
                         'short_circuit': 'Short circuit detected. Current cannot be calculated reliably using this ideal-source model.',
+                        'solver_error': 'The circuit could not be solved. Check the circuit connections and component values.',
                         'series_circuit_explanation': 'Current flows because the circuit is closed and the source provides voltage. In a series circuit, the same current flows through all components. The voltage drops across resistors add up to the source voltage.',
+                        'parallel_circuit_explanation': 'Current divides among parallel branches. The measurements include the combined effect of all conducting branches.',
+                        'mixed_circuit_explanation': 'This circuit contains series and parallel sections. Current divides at branches, and the measurements include all conducting paths.',
+                        'ac_circuit_explanation': 'Sinusoidal AC steady-state result. Voltage and current are RMS values; appliance power factor is modeled as a fixed impedance at the selected frequency.',
+                        'ac_animation_note': 'Animated current reverses direction to represent AC.',
+                        'ideal_wire_assumption': 'Wire assumption: ideal wires with zero voltage drop; conductor length and gauge are not modeled.',
+                        'multiple_ac_sources_unsupported': 'This version supports one AC source at a time.',
+                        'mixed_source_types_unsupported': 'Do not mix AC sources and DC batteries in one circuit in this version.',
+                        'invalid_ac_source': 'Enter a positive RMS voltage and frequency for the AC source.',
+                        'invalid_appliance_rating': 'Enter positive rated voltage and power, and a power factor greater than 0 and at most 1.',
+                        'appliance_requires_ac': 'Appliance nameplate loads require an AC source in this model. Use a resistor or bulb for DC circuits.',
+                        'equivalent_resistance': 'Equivalent resistance:',
                         'open_circuit_explanation': 'No current flows because the circuit path is broken. In a DC circuit, current requires a complete conducting loop.',
-                        'unsupported_parallel_topology_explanation': 'Volt-Flow v1.1 is designed exclusively for single-loop series circuits. Parallel or branching topologies are not supported in this version.',
                         'short_circuit_explanation': 'This is a short circuit. The ideal voltage source is connected through a zero-resistance path, which would theoretically produce infinite current.',
                         'ohms_law': "Ohm's Law: V = I × R",
                         'power_formula': 'Power: P = V × I = I² × R',
@@ -1310,9 +2271,14 @@
                     ceb: {
                         'tool-select-label': 'Pili',
                         'tool-battery-label': 'Baterya',
+                        'tool-ac-source-label': 'AC Source',
                         'tool-resistor-label': 'Resistor',
                         'tool-switch-label': 'Switch',
+                        'tool-utility-box-label': 'Kahon sa koneksyon',
+                        'welcome-tagline': 'Paghimo og circuit ug tan-awa ang pag-agos sa kuryente niini.',
+                        'welcome-start': 'Sugdi ang Simulation',
                         'tool-bulb-label': 'Bombilya',
+                        'tool-appliance-label': 'Appliance',
                         'tool-wire-label': 'Alambre',
                         'tool-delete-label': 'Tangtang',
                         'new-circuit-btn': 'Bag-ong Circuit',
@@ -1322,8 +2288,23 @@
                         'properties-title': 'Mga Property',
                         'no-selection-text': 'Walay napiling component',
                         'component-type': 'Matang',
+                        'component-type-battery': 'Baterya',
+                        'component-type-acSource': 'AC Source',
+                        'component-type-appliance': 'Appliance Load',
+                        'component-type-resistor': 'Resistor',
+                        'component-type-switch': 'Switch',
+                        'component-type-utilityBox': 'Kahon sa koneksyon',
+                        'utility-box-connection-note': 'Konektado ang upat ka terminal sulod sa kahon isip usa ka junction.',
+                        'component-type-bulb': 'Bombilya',
                         'voltage-property': 'Voltage (V)',
+                        'rms-voltage-property': 'AC RMS Voltage (V)',
+                        'frequency-property': 'Frequency (Hz)',
                         'resistance-property': 'Resistance (Ω)',
+                        'rated-voltage-property': 'Rated Voltage (V)',
+                        'rated-power-property': 'Rated Active Power (W)',
+                        'power-factor-property': 'Power Factor (0–1)',
+                        'operating-voltage': 'Operating Voltage',
+                        'branch-current': 'Component Current',
                         'switch-state': 'Estado',
                         'switch-open': 'Bukas',
                         'switch-closed': 'Sirado',
@@ -1331,23 +2312,42 @@
                         'delete-component': 'Tangtanga ang Component',
                         'measurements-title': 'Mga Sukod',
                         'voltage-label': 'Voltage',
+                        'rms-voltage-label': 'RMS Voltage',
                         'current-label': 'Current',
+                        'rms-current-label': 'RMS Current',
                         'resistance-label': 'Resistance',
+                        'impedance-label': 'Impedance',
                         'power-label': 'Power',
+                        'active-power-label': 'Active Power',
+                        'apparent-power-label': 'Apparent Power',
+                        'power-factor-label': 'Power Factor',
+                        'impedance-label': 'Impedance',
                         'explanation-title': 'Katin-awan sa Circuit',
                         'default-explanation': 'Paghimo ug circuit aron makita kon unsaon pag-agi sa kuryente',
-                        'no_source': 'Walay baterya sa circuit. Pagdugang ug baterya aron maghatag ug voltage.',
+                        'no_source': 'Walay voltage source sa circuit. Pagdugang og baterya o AC source.',
                         'multiple_sources': 'Daghan nga baterya ang nakit-an. Ang simulator nagsuporta lang ug usa ka source.',
                         'invalid_voltage': 'Ang voltage sa baterya dili balido. Palihug pagsulod ug hustong numero.',
                         'invalid_battery': 'Ang mga terminal sa baterya wala ma-configure ug tarong.',
+                        'incompatible_sources': 'Nagkasumpaki ang voltage sa mga baterya. Susiha ang voltage ug polarity sa matag usa.',
+                        'unsupported_source_topology': 'Wala pa gisuportahan kini nga pagkahan-ay sa mga baterya. I-series ang mga baterya o i-parallel ang magkapareho og voltage.',
                         'open_circuit': 'Ang agianan sa circuit naputol. Ang current dili makagi sa putol nga agianan.',
                         'switch_open': 'Bukas ang switch, busa naputol ang agianan sa current.',
-                        'unsupported_parallel_topology': 'Nakit-an ang parallel o branching nga topology. Ang Volt-Flow v1.1 nagsuporta lang ug single-loop series circuit.',
                         'invalid_resistance': 'Adunay usa o labaw pang components nga dili balido ang resistance.',
                         'short_circuit': 'Nakit-an ang short circuit. Dili matino ang current gamit niining ideal-source model.',
+                        'solver_error': 'Dili masulbad ang circuit. Susiha ang mga koneksyon ug value sa components.',
                         'series_circuit_explanation': 'Moagi ang current kay sirado ang circuit ug adunay voltage ang source. Sa series circuit, parehas nga current ang moagi sa tanang components. Ang voltage drops sa mga resistor modugang hangtod sa voltage sa source.',
+                        'parallel_circuit_explanation': 'Mabahin ang current sa parallel nga mga sanga. Ang sukod naglakip sa hiniusang epekto sa tanang sanga nga naay agianan.',
+                        'mixed_circuit_explanation': 'Kini nga circuit adunay series ug parallel nga mga bahin. Mabahin ang current sa mga sanga, ug ang sukod naglakip sa tanang agianan.',
+                        'ac_circuit_explanation': 'Resulta kini sa steady-state nga sinusoidal AC. RMS ang sukod sa voltage ug current; fixed impedance sa gipiling frequency ang model sa power factor sa appliance.',
+                        'ac_animation_note': 'Ang lihok sa current animation mobaliktad aron ipakita ang AC.',
+                        'ideal_wire_assumption': 'Assumption sa wire: ideal ang mga wire ug walay voltage drop; wala gi-model ang gitas-on ug gauge sa conductor.',
+                        'multiple_ac_sources_unsupported': 'Usa ra ka AC source matag higayon ang gisuportahan niini nga bersyon.',
+                        'mixed_source_types_unsupported': 'Ayaw isagol ang AC sources ug DC batteries sa usa ka circuit niini nga bersyon.',
+                        'invalid_ac_source': 'Pagsulod og positibong RMS voltage ug frequency para sa AC source.',
+                        'invalid_appliance_rating': 'Pagsulod og positibong rated voltage ug power, ug power factor nga labaw sa 0 hangtod 1.',
+                        'appliance_requires_ac': 'Kinahanglan og AC source ang appliance nameplate loads niini nga model. Gamit og resistor o bulb para sa DC circuit.',
+                        'equivalent_resistance': 'Katumbas nga resistance:',
                         'open_circuit_explanation': 'Walay current nga moagi kay putol ang agianan sa circuit. Sa DC circuit, ang current nanginahanglan ug kompleto nga conducting loop.',
-                        'unsupported_parallel_topology_explanation': 'Ang Volt-Flow v1.1 gidisenyo lamang alang sa single-loop series circuits. Dili gisuportahan ang parallel o branching network sa kini nga bersyon.',
                         'short_circuit_explanation': 'Kini usa ka short circuit. Ang ideal voltage source nakonekta pinaagi sa zero-resistance path, nga theoretically mokahimog infinite current.',
                         'ohms_law': "Balaod ni Ohm: V = I × R",
                         'power_formula': 'Power: P = V × I = I² × R',
@@ -1407,7 +2407,7 @@
                 try {
                     const data = localStorage.getItem(this.storageKey);
                     if (!data) return null;
-                    const parsed = JSON.parse(data);
+                    const parsed = this.migrateLegacyMultiGangSwitches(JSON.parse(data));
                     if (!this.validateSchema(parsed)) {
                         console.error('Incompatible or corrupt saved circuit schema');
                         return null;
@@ -1419,12 +2419,66 @@
                 }
             }
 
+            migrateLegacyMultiGangSwitches(data) {
+                if (!data || !Array.isArray(data.components) || !Array.isArray(data.wires)) return data;
+                const existingIds = new Set(data.components.map(([id]) => id));
+                const terminalIdMap = new Map();
+                const components = [];
+
+                for (const [id, component] of data.components) {
+                    if (component?.type !== 'switch2' && component?.type !== 'switch3') {
+                        components.push([id, component]);
+                        continue;
+                    }
+
+                    const gangCount = component.type === 'switch2' ? 2 : 3;
+                    if (!Array.isArray(component.terminals) || component.terminals.length !== gangCount * 2 ||
+                        !Array.isArray(component.properties?.closed) || component.properties.closed.length !== gangCount) {
+                        return data;
+                    }
+
+                    for (let index = 0; index < gangCount; index++) {
+                        const oldA = component.terminals[index * 2];
+                        const oldB = component.terminals[index * 2 + 1];
+                        let newId = `${id}_single_${index + 1}`;
+                        let suffix = 1;
+                        while (existingIds.has(newId)) newId = `${id}_single_${index + 1}_${suffix++}`;
+                        existingIds.add(newId);
+                        const rowY = Number.isFinite(oldA?.position?.y) ? oldA.position.y - 20 : 14 + index * 26 - 20;
+                        const terminals = [
+                            { id: `${newId}_t1`, componentId: newId, type: 'terminal1', position: { x: 0, y: 20 } },
+                            { id: `${newId}_t2`, componentId: newId, type: 'terminal2', position: { x: 80, y: 20 } }
+                        ];
+                        if (oldA?.id) terminalIdMap.set(oldA.id, terminals[0].id);
+                        if (oldB?.id) terminalIdMap.set(oldB.id, terminals[1].id);
+                        components.push([newId, {
+                            ...component,
+                            id: newId,
+                            type: 'switch',
+                            properties: { closed: component.properties.closed[index] },
+                            position: { x: component.position.x, y: component.position.y + rowY },
+                            terminals
+                        }]);
+                    }
+                }
+
+                return {
+                    ...data,
+                    components,
+                    wires: data.wires.map(wire => ({
+                        ...wire,
+                        from: terminalIdMap.get(wire.from) || wire.from,
+                        to: terminalIdMap.get(wire.to) || wire.to
+                    }))
+                };
+            }
+
             validateSchema(data) {
                 if (!data || typeof data !== 'object') return false;
                 if (!Array.isArray(data.components) || !Array.isArray(data.wires)) return false;
                 if (typeof data.nextId !== 'number' || isNaN(data.nextId) || !isFinite(data.nextId) || data.nextId < 1) return false;
 
-                const validTypes = new Set(['battery', 'resistor', 'switch', 'bulb']);
+                const validTypes = new Set(['battery', 'acSource', 'resistor', 'switch', 'utilityBox', 'bulb', 'appliance']);
                 const componentIds = new Set();
                 const validTerminalIds = new Set();
 
@@ -1445,14 +2499,32 @@
                     if (comp.type === 'battery') {
                         const v = parseFloat(comp.properties.voltage);
                         if (isNaN(v) || !isFinite(v)) return false;
+                    } else if (comp.type === 'acSource') {
+                        for (const key of ['voltageRms', 'frequency']) {
+                            const raw = comp.properties[key];
+                            if (raw !== null && raw !== '') {
+                                const value = parseFloat(raw);
+                                if (!isFinite(value) || isNaN(value) || value <= 0) return false;
+                            }
+                        }
                     } else if (comp.type === 'resistor' || comp.type === 'bulb') {
                         const r = parseFloat(comp.properties.resistance);
                         if (isNaN(r) || !isFinite(r) || r < 0) return false;
+                    } else if (comp.type === 'appliance') {
+                        const v = comp.properties.ratedVoltage === null || comp.properties.ratedVoltage === '' ? null : parseFloat(comp.properties.ratedVoltage);
+                        const p = comp.properties.ratedPower === null || comp.properties.ratedPower === '' ? null : parseFloat(comp.properties.ratedPower);
+                        const pf = parseFloat(comp.properties.powerFactor);
+                        if ((v !== null && (!isFinite(v) || isNaN(v) || v <= 0)) ||
+                            (p !== null && (!isFinite(p) || isNaN(p) || p <= 0)) ||
+                            !isFinite(pf) || isNaN(pf) || pf <= 0 || pf > 1) return false;
                     } else if (comp.type === 'switch') {
                         if (typeof comp.properties.closed !== 'boolean') return false;
                     }
 
                     if (!Array.isArray(comp.terminals) || comp.terminals.length === 0) return false;
+                    const expectedTerminals = comp.type === 'utilityBox' ? 4 :
+                        ['battery', 'acSource', 'resistor', 'switch', 'bulb', 'appliance'].includes(comp.type) ? 2 : null;
+                    if (expectedTerminals !== null && comp.terminals.length !== expectedTerminals) return false;
                     for (const term of comp.terminals) {
                         if (!term || typeof term !== 'object') return false;
                         if (typeof term.id !== 'string' || !term.id) return false;
@@ -1542,8 +2614,10 @@
                     if (switchElement) {
                         const componentId = switchElement.dataset.switchControl;
                         const component = this.model.getComponent(componentId);
-                        if (component && component.type === 'switch') {
-                            component.properties.closed = !component.properties.closed;
+                        if (component && isSwitchType(component.type)) {
+                            const index = Number(switchElement.dataset.gangIndex || 0);
+                            if (component.type === 'switch') component.properties.closed = !component.properties.closed;
+                            else component.properties.closed[index] = !component.properties.closed[index];
                             this.selectedId = component.id;
                             this.onUpdate();
                         }
@@ -1580,7 +2654,7 @@
                         this.onUpdate();
                     }
 
-                } else if (['battery', 'resistor', 'switch', 'bulb'].includes(this.currentTool)) {
+                } else if (['battery', 'acSource', 'resistor', 'switch', 'utilityBox', 'bulb', 'appliance'].includes(this.currentTool)) {
                     this.addComponent(this.currentTool, svgPoint);
                 }
             }
@@ -1640,9 +2714,12 @@
             addComponent(type, position) {
                 const defaultProperties = {
                     battery: { voltage: 9 },
+                    acSource: { voltageRms: null, frequency: null },
                     resistor: { resistance: 10 },
                     switch: { closed: true },
-                    bulb: { resistance: 5 }
+                    utilityBox: {},
+                    bulb: { resistance: 5 },
+                    appliance: { ratedVoltage: null, ratedPower: null, powerFactor: 1 }
                 };
 
                 this.model.addComponent(type, defaultProperties[type], position);
@@ -1786,18 +2863,35 @@
                     return;
                 }
 
+                const selectedCircuitResult = new CircuitSolver(this.model).solve();
+                const selectedComponentResult = selectedCircuitResult.valid
+                    ? selectedCircuitResult.componentResults.get(component.id)
+                    : null;
                 let html = `
                     <div class="property-row">
                         <label>${this.i18n.t('component-type')}</label>
-                        <div>${component.type.charAt(0).toUpperCase() + component.type.slice(1)}</div>
+                        <div>${this.i18n.t(`component-type-${component.type}`)}</div>
                     </div>
                 `;
 
-                if (component.type === 'battery') {
+                if (component.type === 'utilityBox') {
+                    html += `<p class="utility-box-note">${this.i18n.t('utility-box-connection-note')}</p>`;
+                } else if (component.type === 'battery') {
                     html += `
                         <div class="property-row">
                             <label for="voltage-input">${this.i18n.t('voltage-property')}</label>
                             <input type="number" id="voltage-input" value="${component.properties.voltage}" step="0.1">
+                        </div>
+                    `;
+                } else if (component.type === 'acSource') {
+                    html += `
+                        <div class="property-row">
+                            <label for="ac-voltage-input">${this.i18n.t('rms-voltage-property')}</label>
+                            <input type="number" id="ac-voltage-input" value="${component.properties.voltageRms || ''}" step="1" min="0.1">
+                        </div>
+                        <div class="property-row">
+                            <label for="frequency-input">${this.i18n.t('frequency-property')}</label>
+                            <input type="number" id="frequency-input" value="${component.properties.frequency || ''}" step="1" min="0.1">
                         </div>
                     `;
                 } else if (component.type === 'resistor' || component.type === 'bulb') {
@@ -1807,13 +2901,35 @@
                             <input type="number" id="resistance-input" value="${component.properties.resistance}" step="0.1" min="0.01">
                         </div>
                     `;
-                } else if (component.type === 'switch') {
+                } else if (component.type === 'appliance') {
                     html += `
                         <div class="property-row">
-                            <label>${this.i18n.t('switch-state')}</label>
-                            <div>${component.properties.closed ? this.i18n.t('switch-closed') : this.i18n.t('switch-open')}</div>
+                            <label for="rated-voltage-input">${this.i18n.t('rated-voltage-property')}</label>
+                            <input type="number" id="rated-voltage-input" value="${component.properties.ratedVoltage || ''}" step="1" min="0.1">
                         </div>
-                        <button id="toggle-switch-btn">${this.i18n.t('toggle-switch')}</button>
+                        <div class="property-row">
+                            <label for="rated-power-input">${this.i18n.t('rated-power-property')}</label>
+                            <input type="number" id="rated-power-input" value="${component.properties.ratedPower || ''}" step="1" min="0.1">
+                        </div>
+                        <div class="property-row">
+                            <label for="power-factor-input">${this.i18n.t('power-factor-property')}</label>
+                            <input type="number" id="power-factor-input" value="${component.properties.powerFactor}" step="0.01" min="0.01" max="1">
+                        </div>
+                    `;
+                } else if (isSwitchType(component.type)) {
+                    html += `
+                        <div class="property-row"><label>${this.i18n.t('switch-state')}</label>
+                        <div>${component.properties.closed ? this.i18n.t('switch-closed') : this.i18n.t('switch-open')}</div></div>
+                        <button id="toggle-switch-btn">${this.i18n.t('toggle-switch')}</button>`;
+                }
+
+                if (selectedComponentResult) {
+                    const voltageUnit = selectedCircuitResult.sourceType === 'ac' ? ' V RMS' : ' V';
+                    const currentUnit = selectedCircuitResult.sourceType === 'ac' ? ' A RMS' : ' A';
+                    html += `
+                        <div class="property-row"><label>${this.i18n.t('operating-voltage')}</label><div>${selectedComponentResult.voltage.toFixed(2)}${voltageUnit}</div></div>
+                        <div class="property-row"><label>${this.i18n.t('branch-current')}</label><div>${selectedComponentResult.current.toFixed(3)}${currentUnit}</div></div>
+                        <div class="property-row"><label>${this.i18n.t('active-power-label')}</label><div>${selectedComponentResult.power.toFixed(2)} W</div></div>
                     `;
                 }
 
@@ -1836,12 +2952,33 @@
                 if (resistanceInput) {
                     resistanceInput.addEventListener('change', (e) => {
                         const val = parseFloat(e.target.value);
-                        if (!isNaN(val) && val >= 0) {
+                        if (!isNaN(val) && val >= 0.01) {
                             component.properties.resistance = val;
                             this.update();
                         }
                     });
                 }
+
+                const acVoltageInput = document.getElementById('ac-voltage-input');
+                const frequencyInput = document.getElementById('frequency-input');
+                const ratedVoltageInput = document.getElementById('rated-voltage-input');
+                const ratedPowerInput = document.getElementById('rated-power-input');
+                const powerFactorInput = document.getElementById('power-factor-input');
+                const bindPositiveNumber = (input, property, maximum = Infinity) => {
+                    if (!input) return;
+                    input.addEventListener('change', e => {
+                        const value = parseFloat(e.target.value);
+                        if (Number.isFinite(value) && value > 0 && value <= maximum) {
+                            component.properties[property] = value;
+                            this.update();
+                        }
+                    });
+                };
+                bindPositiveNumber(acVoltageInput, 'voltageRms');
+                bindPositiveNumber(frequencyInput, 'frequency');
+                bindPositiveNumber(ratedVoltageInput, 'ratedVoltage');
+                bindPositiveNumber(ratedPowerInput, 'ratedPower');
+                bindPositiveNumber(powerFactorInput, 'powerFactor', 1);
 
                 const toggleBtn = document.getElementById('toggle-switch-btn');
                 if (toggleBtn) {
@@ -1850,7 +2987,6 @@
                         this.update();
                     });
                 }
-
                 const deleteBtn = document.getElementById('delete-component-btn');
                 if (deleteBtn) {
                     deleteBtn.addEventListener('click', () => {
@@ -1869,6 +3005,20 @@
                 const iEl = document.getElementById('current-value');
                 const rEl = document.getElementById('resistance-value');
                 const pEl = document.getElementById('power-value');
+                const apparentPowerItem = document.getElementById('apparent-power-item');
+                const powerFactorItem = document.getElementById('power-factor-item');
+                const voltageLabel = document.getElementById('voltage-label');
+                const currentLabel = document.getElementById('current-label');
+                const resistanceLabel = document.getElementById('resistance-label');
+                const powerLabel = document.getElementById('power-label');
+                const acMode = result.sourceType === 'ac';
+
+                if (voltageLabel) voltageLabel.textContent = this.i18n.t(acMode ? 'rms-voltage-label' : 'voltage-label');
+                if (currentLabel) currentLabel.textContent = this.i18n.t(acMode ? 'rms-current-label' : 'current-label');
+                if (resistanceLabel) resistanceLabel.textContent = this.i18n.t(acMode ? 'impedance-label' : 'resistance-label');
+                if (powerLabel) powerLabel.textContent = this.i18n.t(acMode ? 'active-power-label' : 'power-label');
+                if (apparentPowerItem) apparentPowerItem.style.display = acMode ? '' : 'none';
+                if (powerFactorItem) powerFactorItem.style.display = acMode ? '' : 'none';
 
                 if (vEl) vEl.textContent = result.voltage !== null ? `${result.voltage.toFixed(2)} V` : '― V';
 
@@ -1885,6 +3035,12 @@
                 if (rEl) rEl.textContent = result.totalResistance !== null ? `${result.totalResistance.toFixed(2)} Ω` : '― Ω';
 
                 if (pEl) pEl.textContent = (result.power !== null && result.valid) ? `${result.power.toFixed(2)} W` : '― W';
+                const apparentPowerEl = document.getElementById('apparent-power-value');
+                const powerFactorEl = document.getElementById('power-factor-value');
+                if (apparentPowerEl) apparentPowerEl.textContent = acMode && result.valid
+                    ? `${result.apparentPower.toFixed(2)} VA` : '― VA';
+                if (powerFactorEl) powerFactorEl.textContent = acMode && result.valid
+                    ? result.powerFactor.toFixed(3) : '―';
 
                 const statusDiv = document.getElementById('circuit-status');
                 if (statusDiv) {
@@ -1900,15 +3056,16 @@
                 }
 
                 for (const [id, component] of this.model.components) {
-                    if (component.type === 'bulb') {
+                    if (component.type === 'bulb' || component.type === 'appliance') {
                         const componentResult = result.componentResults.get(id);
                         const isOn = componentResult && componentResult.current > 0.01;
-                        this.renderer.updateBulbState(id, isOn);
+                        if (component.type === 'bulb') this.renderer.updateBulbState(id, isOn);
+                        else this.renderer.updateApplianceState(id, isOn);
                     }
                 }
 
                 if (result.valid && result.path && result.current > 0) {
-                    this.animator.start(result.path);
+                    this.animator.start(result.paths || result.path, result.sourceType === 'ac');
                 } else {
                     this.animator.stop();
                 }
@@ -1928,12 +3085,27 @@
                 let html = '<div class="info">';
 
                 if (result.valid) {
-                    html += `<p>${this.i18n.t('series_circuit_explanation')}</p>`;
-                    html += `<div class="formula">${this.i18n.t('ohms_law')}<br>I = ${result.voltage.toFixed(2)} V ÷ ${result.totalResistance.toFixed(2)} Ω = ${result.current.toFixed(3)} A</div>`;
-                    html += `<div class="formula">${this.i18n.t('power_formula')}<br>P = ${result.voltage.toFixed(2)} V × ${result.current.toFixed(3)} A = ${result.power.toFixed(2)} W</div>`;
-                    html += `<div class="formula">${this.i18n.t('series_resistance')}</div>`;
-                } else if (result.warnings.includes('unsupported_parallel_topology')) {
-                    html += `<p>${this.i18n.t('unsupported_parallel_topology_explanation')}</p>`;
+                    if (result.sourceType === 'ac') {
+                        html += `<p>${this.i18n.t('ac_circuit_explanation')}</p>`;
+                        html += `<div class="formula">V<sub>RMS</sub> = ${result.voltage.toFixed(2)} V; f = ${result.frequency.toFixed(2)} Hz</div>`;
+                        html += `<div class="formula">I<sub>RMS</sub> = ${result.current.toFixed(3)} A; |Z| = ${result.totalResistance.toFixed(2)} Ω</div>`;
+                        html += `<div class="formula">S = V<sub>RMS</sub> × I<sub>RMS</sub> = ${result.apparentPower.toFixed(2)} VA</div>`;
+                        html += `<div class="formula">P = S × PF = ${result.apparentPower.toFixed(2)} VA × ${result.powerFactor.toFixed(3)} = ${result.power.toFixed(2)} W</div>`;
+                        html += `<p>${this.i18n.t('ideal_wire_assumption')}</p>`;
+                        html += `<p>${this.i18n.t('ac_animation_note')}</p>`;
+                    } else {
+                        const explanationKey = result.topology === 'parallel'
+                            ? 'parallel_circuit_explanation'
+                            : result.topology === 'mixed'
+                                ? 'mixed_circuit_explanation'
+                                : 'series_circuit_explanation';
+                        html += `<p>${this.i18n.t(explanationKey)}</p>`;
+                        html += `<div class="formula">${this.i18n.t('ohms_law')}<br>I = ${result.voltage.toFixed(2)} V ÷ ${result.totalResistance.toFixed(2)} Ω = ${result.current.toFixed(3)} A</div>`;
+                        html += `<div class="formula">${this.i18n.t('power_formula')}<br>P = ${result.voltage.toFixed(2)} V × ${result.current.toFixed(3)} A = ${result.power.toFixed(2)} W</div>`;
+                        html += result.topology === 'series'
+                            ? `<div class="formula">${this.i18n.t('series_resistance')}</div>`
+                            : `<div class="formula">${this.i18n.t('equivalent_resistance')} ${result.totalResistance.toFixed(2)} Ω</div>`;
+                    }
                 } else if (result.openCircuit) {
                     html += `<p>${this.i18n.t('open_circuit_explanation')}</p>`;
                 } else if (result.shortCircuit) {
@@ -1947,6 +3119,18 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             new VoltFlowApp();
+            const welcome = document.getElementById('welcome-screen');
+            const startButton = document.getElementById('welcome-start');
+            const dismissWelcome = () => {
+                welcome.classList.add('is-hidden');
+                welcome.setAttribute('aria-hidden', 'true');
+                document.querySelector('[data-tool="select"]')?.focus();
+            };
+            startButton.addEventListener('click', dismissWelcome);
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && !welcome.classList.contains('is-hidden')) dismissWelcome();
+            });
+            startButton.focus();
         });
     </script>
 </body>
