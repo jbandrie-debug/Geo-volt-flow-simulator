@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a1f2e">
+    <link rel="manifest" href="./manifest.webmanifest">
     <title>Volt-Flow | Interactive Electrical Simulator v1.1</title>
     <style>
         * {
@@ -352,7 +354,7 @@
             .tool-btn {
                 width: 60px;
                 height: 60px;
-                flex-shrink: 0;
+                flex: 0 0 60px;
             }
 
             .workspace {
@@ -384,7 +386,7 @@
                 width: 100%;
             }
 
-            button {
+            button:not(.tool-btn) {
                 flex: 1;
                 min-width: 0;
                 padding: 0.5rem;
@@ -696,6 +698,7 @@
             <button id="new-circuit-btn" aria-label="New Circuit">New Circuit</button>
             <button id="save-btn" aria-label="Save">Save</button>
             <button id="load-btn" aria-label="Load">Load</button>
+            <button id="install-app-btn" aria-label="Install Volt-Flow" hidden>Install App</button>
         </div>
     </header>
 
@@ -2191,6 +2194,7 @@
                         'tool-wire-label': 'Wire',
                         'tool-delete-label': 'Delete',
                         'new-circuit-btn': 'New Circuit',
+                        'install-app-btn': 'Install App',
                         'save-btn': 'Save',
                         'load-btn': 'Load',
                         'empty-state-text': 'Select a component from the toolbar to start building your circuit',
@@ -2282,6 +2286,7 @@
                         'tool-wire-label': 'Alambre',
                         'tool-delete-label': 'Tangtang',
                         'new-circuit-btn': 'Bag-ong Circuit',
+                        'install-app-btn': 'I-install ang App',
                         'save-btn': 'I-save',
                         'load-btn': 'I-load',
                         'empty-state-text': 'Pagpili ug component gikan sa toolbar aron magsugod sa paghimo sa imong circuit',
@@ -3119,6 +3124,35 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             new VoltFlowApp();
+            const installButton = document.getElementById('install-app-btn');
+            let installPrompt = null;
+
+            window.addEventListener('beforeinstallprompt', event => {
+                event.preventDefault();
+                installPrompt = event;
+                installButton.hidden = false;
+            });
+
+            installButton.addEventListener('click', async () => {
+                if (!installPrompt) return;
+                const promptEvent = installPrompt;
+                installPrompt = null;
+                await promptEvent.prompt();
+                await promptEvent.userChoice;
+                installButton.hidden = true;
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installPrompt = null;
+                installButton.hidden = true;
+            });
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./service-worker.js').catch(error => {
+                    console.error('Volt-Flow offline support could not start:', error);
+                });
+            }
+
             const welcome = document.getElementById('welcome-screen');
             const startButton = document.getElementById('welcome-start');
             const dismissWelcome = () => {
@@ -3135,3 +3169,4 @@
     </script>
 </body>
 </html>
+
