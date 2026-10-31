@@ -1,4 +1,4 @@
-const CACHE_NAME = 'volt-flow-shell-v1';
+const CACHE_NAME = 'volt-flow-shell-v2';
 const APP_ROOT = new URL('./', self.registration.scope).href;
 const APP_INDEX = new URL('./index.html', self.registration.scope).href;
 const APP_SHELL = [
