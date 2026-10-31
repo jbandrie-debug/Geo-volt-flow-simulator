@@ -3195,7 +3195,6 @@ Total output lines: 3391
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            new VoltFlowApp();
             const installButton = document.getElementById('install-app-btn');
             let installPrompt = null;
 
@@ -3232,7 +3231,17 @@ Total output lines: 3391
                 welcome.setAttribute('aria-hidden', 'true');
                 document.querySelector('[data-tool="select"]')?.focus();
             };
-            startButton.addEventListener('click', dismissWelcome);
+            startButton.addEventListener('click', () => {
+                startButton.disabled = true;
+                try {
+                    new VoltFlowApp();
+                    dismissWelcome();
+                } catch (error) {
+                    console.error('Volt-Flow could not start the simulator:', error);
+                    startButton.disabled = false;
+                    document.getElementById('welcome-tagline').textContent = 'The simulator could not start. Please close and reopen the app, then try again.';
+                }
+            });
             document.addEventListener('keydown', event => {
                 if (event.key === 'Escape' && !welcome.classList.contains('is-hidden')) dismissWelcome();
             });
