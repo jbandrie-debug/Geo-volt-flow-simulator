@@ -24,7 +24,7 @@ cd android
 
 The APK is written to `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-To publish a new APK release, create and push a version branch such as `release/v1.0.0` from the desired commit. GitHub Actions builds the APK, creates the matching `v1.0.0` GitHub Release, and saves the APK as both a release asset and a workflow artifact.
+To publish a new APK release, create and push a version branch such as `release/v1.0.0` from the desired commit. GitHub Actions builds the APK, creates the matching GitHub Release, and saves the APK as both a release asset and a workflow artifact.
 
 ## Circuit model notes
 
