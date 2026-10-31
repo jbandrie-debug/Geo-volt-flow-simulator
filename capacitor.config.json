@@ -1,0 +1,7 @@
+{
+  "appId": "com.voltflow.simulator",
+  "appName": "Volt-Flow",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
+
