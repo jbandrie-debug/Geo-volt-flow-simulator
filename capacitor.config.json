@@ -2,6 +2,15 @@
   "appId": "com.voltflow.simulator",
   "appName": "Volt-Flow",
   "webDir": "www",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 0,
+      "backgroundColor": "#1a1f2e",
+      "showSpinner": false
+    }
+  }
 }
 
