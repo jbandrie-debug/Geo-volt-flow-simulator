@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 42003)
+Total output lines: 3391
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -299,6 +302,33 @@
         .terminal:hover {
             fill: var(--accent-green);
             stroke-width: 2;
+        }
+
+        .terminal-positive { fill: #ff5964; }
+        .terminal-negative { fill: var(--accent-blue); }
+
+        .component-copy-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.6rem 0;
+        }
+
+        .component-copy-actions button { flex: 1; }
+
+        .component-uses {
+            background: rgba(74, 158, 255, 0.08);
+            border-left: 3px solid var(--accent-blue);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin: 0.65rem 0;
+            padding: 0.65rem 0.75rem;
+        }
+
+        .component-uses p {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
         }
 
         .wire {
@@ -720,6 +750,8 @@
                 <div style="font-size: 1.5rem;">⊏⊐</div>
                 <div id="tool-resistor-label">Resistor</div>
             </button>
+            <button class="tool-btn" data-tool="capacitor" aria-label="Capacitor"><div style="font-size: 1.5rem;">ǁ</div><div id="tool-capacitor-label">Capacitor</div></button>
+            <button class="tool-btn" data-tool="inductor" aria-label="Inductor"><div style="font-size: 1.5rem;">∿∿</div><div id="tool-inductor-label">Inductor</div></button>
             <button class="tool-btn" data-tool="switch" aria-label="Switch">
                 <div style="font-size: 1.5rem;">⏚</div>
                 <div id="tool-switch-label">Switch</div>
@@ -728,6 +760,7 @@
                 <div style="font-size: 1.5rem;">▣</div>
                 <div id="tool-utility-box-label">Utility Box</div>
             </button>
+            <button class="tool-btn" data-tool="ground" aria-label="Ground"><div style="font-size: 1.5rem;">⏚</div><div id="tool-ground-label">Ground</div></button>
             <button class="tool-btn" data-tool="bulb" aria-label="Bulb">
                 <div style="font-size: 1.5rem;">💡</div>
                 <div id="tool-bulb-label">Bulb</div>
@@ -847,12 +880,14 @@
                     );
                 } else if (type === 'utilityBox') {
                     terminals.push(
-                        { id: `${componentId}_t1`, componentId, type: 'terminal1', position: { x: 0, y: 16 } },
-                        { id: `${componentId}_t2`, componentId, type: 'terminal2', position: { x: 60, y: 16 } },
-                        { id: `${componentId}_t3`, componentId, type: 'terminal3', position: { x: 0, y: 44 } },
-                        { id: `${componentId}_t4`, componentId, type: 'terminal4', position: { x: 60, y: 44 } }
+                        { id: `${componentId}_t1`, componentId, type: 'positive', position: { x: 0, y: 16 } },
+                        { id: `${componentId}_t2`, componentId, type: 'positive', position: { x: 60, y: 16 } },
+                        { id: `${componentId}_t3`, componentId, type: 'negative', position: { x: 0, y: 44 } },
+                        { id: `${componentId}_t4`, componentId, type: 'negative', position: { x: 60, y: 44 } }
                     );
-                } else if (type === 'resistor' || type === 'switch' || type === 'bulb' || type === 'appliance') {
+                } else if (type === 'ground') {
+                    terminals.push({ id: `${componentId}_gnd`, componentId, type: 'ground', position: { x: 10, y: 0 } });
+                } else if (type === 'resistor' || type === 'capacitor' || type === 'inductor' || type === 'switch' || type === 'bulb' || type === 'appliance') {
                     terminals.push(
                         { id: `${componentId}_t1`, componentId, type: 'terminal1', position: { x: 0, y: 20 } },
                         { id: `${componentId}_t2`, componentId, type: 'terminal2', position: { x: 80, y: 20 } }
@@ -941,12 +976,13 @@
                         if (!graph.has(terminal.id)) graph.set(terminal.id, []);
                     }
 
-                    if (component.type === 'resistor' || component.type === 'bulb' || component.type === 'appliance') {
+                    if (component.type === 'resistor' || component.type === 'bulb' || component.type === 'appliance' || component.type === 'capacitor' || component.type === 'inductor') {
                         const [a, b] = component.terminals;
                         if (a && b) connect(a.id, b.id);
                     } else if (component.type === 'utilityBox') {
-                        const [first, ...others] = component.terminals;
-                        for (const terminal of others) connect(first.id, terminal.id);
+                        const [positiveLeft, positiveRight, negativeLeft, negativeRight] = component.terminals;
+                        if (positiveLeft && positiveRight) connect(positiveLeft.id, positiveRight.id);
+                        if (negativeLeft && negativeRight) connect(negativeLeft.id, negativeRight.id);
                     } else if (isSwitchType(component.type)) {
                         for (const pair of getSwitchPairs(component)) {
                             if (includeSwitches || pair.closed) {
@@ -1076,8 +1112,9 @@
                 const resistors = [];
                 for (const component of this.model.components.values()) {
                     if (component.type === 'utilityBox') {
-                        const [first, ...others] = component.terminals;
-                        for (const terminal of others) union(first.id, terminal.id);
+                        const [positiveLeft, positiveRight, negativeLeft, negativeRight] = component.terminals;
+                        if (positiveLeft && positiveRight) union(positiveLeft.id, positiveRight.id);
+                        if (negativeLeft && negativeRight) union(negativeLeft.id, negativeRight.id);
                     } else if (isSwitchType(component.type)) {
                         for (const pair of getSwitchPairs(component)) {
                             if (pair.closed && pair.a && pair.b) union(pair.a.id, pair.b.id);
@@ -1093,6 +1130,8 @@
                             if (resistance === 0) union(a.id, b.id);
                             else resistors.push({ component, a: a.id, b: b.id, resistance });
                         }
+                    } else if (component.type === 'inductor') {
+                        union(component.terminals[0].id, component.terminals[1].id);
                     }
                 }
 
@@ -1265,8 +1304,9 @@
                 for (const wire of this.model.wires) union(wire.from, wire.to);
                 for (const component of this.model.components.values()) {
                     if (component.type === 'utilityBox') {
-                        const [first, ...others] = component.terminals;
-                        for (const terminal of others) union(first.id, terminal.id);
+                        const [positiveLeft, positiveRight, negativeLeft, negativeRight] = component.terminals;
+                        if (positiveLeft && positiveRight) union(positiveLeft.id, positiveRight.id);
+                        if (negativeLeft && negativeRight) union(negativeLeft.id, negativeRight.id);
                     } else if (isSwitchType(component.type)) {
                         for (const pair of getSwitchPairs(component)) {
                             if (pair.closed && pair.a && pair.b) union(pair.a.id, pair.b.id);
@@ -1290,6 +1330,16 @@
                             continue;
                         }
                         impedance = { re: resistance, im: 0 };
+                    } else if (component.type === 'capacitor' || component.type === 'inductor') {
+                        const value = parseFloat(component.properties.value);
+                        if (!Number.isFinite(value) || value <= 0) {
+                            result.warnings.push('invalid_reactive_value');
+                            return result;
+                        }
+                        const omega = 2 * Math.PI * frequency;
+                        impedance = component.type === 'capacitor'
+                            ? { re: 0, im: -1 / (omega * value) }
+                            : { re: 0, im: omega * value };
                     } else if (component.type === 'appliance') {
                         const ratedVoltage = parseFloat(component.properties.ratedVoltage);
                         const ratedPower = parseFloat(component.properties.ratedPower);
@@ -1770,6 +1820,12 @@
                     this.drawACSource(group, component);
                 } else if (component.type === 'resistor') {
                     this.drawResistor(group, component);
+                } else if (component.type === 'capacitor') {
+                    this.drawCapacitor(group, component);
+                } else if (component.type === 'inductor') {
+                    this.drawInductor(group, component);
+                } else if (component.type === 'ground') {
+                    this.drawGround(group);
                 } else if (component.type === 'switch') {
                     this.drawSwitch(group, component);
                 } else if (component.type === 'utilityBox') {
@@ -1782,129 +1838,16 @@
 
                 for (const terminal of component.terminals) {
                     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    circle.setAttribute('cx', terminal.position.x);
-                    circle.setAttribute('cy', terminal.position.y);
-                    circle.setAttribute('r', 6);
-                    circle.classList.add('terminal');
-                    circle.dataset.terminalId = terminal.id;
-                    group.appendChild(circle);
-                }
-
-                return group;
-            }
-
-            drawBattery(group, component) {
-                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                rect.setAttribute('x', 20);
-                rect.setAttribute('y', 10);
-                rect.setAttribute('width', 40);
-                rect.setAttribute('height', 60);
-                rect.setAttribute('fill', 'none');
-                rect.setAttribute('stroke', '#4a9eff');
-                rect.setAttribute('stroke-width', 2);
-                group.appendChild(rect);
-
-                const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line1.setAttribute('x1', 30);
-                line1.setAttribute('y1', 20);
-                line1.setAttribute('x2', 50);
-                line1.setAttribute('y2', 20);
-                line1.setAttribute('stroke', '#ff4757');
-                line1.setAttribute('stroke-width', 3);
-                group.appendChild(line1);
-
-                const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line2.setAttribute('x1', 40);
-                line2.setAttribute('y1', 12);
-                line2.setAttribute('x2', 40);
-                line2.setAttribute('y2', 28);
-                line2.setAttribute('stroke', '#ff4757');
-                line2.setAttribute('stroke-width', 3);
-                group.appendChild(line2);
-
-                const line3 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line3.setAttribute('x1', 30);
-                line3.setAttribute('y1', 60);
-                line3.setAttribute('x2', 50);
-                line3.setAttribute('y2', 60);
-                line3.setAttribute('stroke', '#4a9eff');
-                line3.setAttribute('stroke-width', 3);
-                group.appendChild(line3);
-
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', 40);
-                text.setAttribute('y', 45);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e8eaf0');
-                text.setAttribute('font-size', '10');
-                text.textContent = `${component.properties.voltage}V`;
+                    circle.setAttribute('cx', terminal.p…2003 tokens truncated…middle');
+                text.setAttribute('fill', '#e8eaf0'); text.setAttribute('font-size', '10'); text.textContent = value;
                 group.appendChild(text);
             }
 
-            drawACSource(group, component) {
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', 40);
-                circle.setAttribute('cy', 40);
-                circle.setAttribute('r', 24);
-                circle.setAttribute('fill', 'none');
-                circle.setAttribute('stroke', '#ffb020');
-                circle.setAttribute('stroke-width', 2);
-                group.appendChild(circle);
-                const wave = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                wave.setAttribute('d', 'M 24 40 C 28 28, 32 28, 36 40 S 44 52, 48 40 S 56 28, 60 40');
-                wave.setAttribute('fill', 'none');
-                wave.setAttribute('stroke', '#ffb020');
-                wave.setAttribute('stroke-width', 2);
-                group.appendChild(wave);
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', 40);
-                text.setAttribute('y', 73);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e8eaf0');
-                text.setAttribute('font-size', '9');
-                text.textContent = component.properties.voltageRms ? `${component.properties.voltageRms}V~` : 'AC';
-                group.appendChild(text);
-            }
-
-            drawAppliance(group, component) {
-                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                rect.setAttribute('x', 17);
-                rect.setAttribute('y', 2);
-                rect.setAttribute('width', 46);
-                rect.setAttribute('height', 36);
-                rect.setAttribute('rx', 4);
-                rect.setAttribute('fill', 'none');
-                rect.setAttribute('stroke', '#9b7bff');
-                rect.setAttribute('stroke-width', 2);
-                rect.dataset.appliance = component.id;
-                group.appendChild(rect);
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', 40);
-                text.setAttribute('y', 24);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e8eaf0');
-                text.setAttribute('font-size', '9');
-                text.textContent = component.properties.ratedPower ? `${component.properties.ratedPower}W` : 'LOAD';
-                group.appendChild(text);
-            }
-
-            drawResistor(group, component) {
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                const d = 'M 0 20 L 20 20 L 25 10 L 35 30 L 45 10 L 55 30 L 60 20 L 80 20';
-                path.setAttribute('d', d);
-                path.setAttribute('fill', 'none');
-                path.setAttribute('stroke', '#00d68f');
-                path.setAttribute('stroke-width', 2);
-                group.appendChild(path);
-
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', 40);
-                text.setAttribute('y', 0);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e8eaf0');
-                text.setAttribute('font-size', '10');
-                text.textContent = `${component.properties.resistance}Ω`;
-                group.appendChild(text);
+            drawGround(group) {
+                const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                symbol.setAttribute('d', 'M 10 0 V 12 M 0 12 H 20 M 3 17 H 17 M 7 22 H 13');
+                symbol.setAttribute('stroke', '#00d68f'); symbol.setAttribute('stroke-width', 2); symbol.setAttribute('fill', 'none');
+                group.appendChild(symbol);
             }
 
             drawSwitch(group, component) {
@@ -1964,22 +1907,27 @@
                 box.setAttribute('stroke-width', 2);
                 group.appendChild(box);
 
-                const splice = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                splice.setAttribute('cx', 30);
-                splice.setAttribute('cy', 30);
-                splice.setAttribute('r', 5);
-                splice.setAttribute('fill', '#4a9eff');
-                group.appendChild(splice);
-
-                for (const [x1, y1, x2, y2] of [[0, 16, 30, 30], [60, 16, 30, 30], [0, 44, 30, 30], [60, 44, 30, 30]]) {
+                for (const [x1, y1, x2, y2, color] of [[0, 16, 60, 16, '#ff5964'], [0, 44, 60, 44, '#4a9eff']]) {
                     const conductor = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     conductor.setAttribute('x1', x1);
                     conductor.setAttribute('y1', y1);
                     conductor.setAttribute('x2', x2);
                     conductor.setAttribute('y2', y2);
-                    conductor.setAttribute('stroke', '#a8aec0');
-                    conductor.setAttribute('stroke-width', 2);
+                    conductor.setAttribute('stroke', color);
+                    conductor.setAttribute('stroke-width', 3);
                     group.appendChild(conductor);
+                }
+
+                for (const [label, y, color] of [['+', 16, '#ff5964'], ['−', 44, '#4a9eff']]) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', 30);
+                    text.setAttribute('y', y + 4);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('fill', color);
+                    text.setAttribute('font-size', 12);
+                    text.setAttribute('font-weight', 'bold');
+                    text.textContent = label;
+                    group.appendChild(text);
                 }
             }
 
@@ -2185,6 +2133,9 @@
                         'tool-battery-label': 'Battery',
                         'tool-ac-source-label': 'AC Source',
                         'tool-resistor-label': 'Resistor',
+                        'tool-capacitor-label': 'Capacitor',
+                        'tool-inductor-label': 'Inductor',
+                        'tool-ground-label': 'Ground',
                         'tool-switch-label': 'Switch',
                         'tool-utility-box-label': 'Utility Box',
                         'welcome-tagline': 'Build a circuit and watch electricity flow through it.',
@@ -2200,14 +2151,32 @@
                         'empty-state-text': 'Select a component from the toolbar to start building your circuit',
                         'properties-title': 'Properties',
                         'no-selection-text': 'No component selected',
+                        'copy-component': 'Copy Component',
+                        'paste-component': 'Paste Component',
                         'component-type': 'Type',
+                        'component-uses-title': 'Uses and function',
+                        'component-uses-battery': 'Provides DC voltage and electrical energy. Connect the positive and negative terminals to complete a circuit.',
+                        'component-uses-acSource': 'Provides alternating voltage. Set its RMS voltage and frequency to model an AC supply.',
+                        'component-uses-resistor': 'Limits current and creates a voltage drop. Its resistance follows Ohm’s law: V = I × R.',
+                        'component-uses-capacitor': 'Stores energy in an electric field. In this steady-state model it blocks DC and its AC impedance depends on capacitance and frequency.',
+                        'component-uses-inductor': 'Stores energy in a magnetic field. In this steady-state model it acts like a short for DC and its AC impedance depends on inductance and frequency.',
+                        'component-uses-ground': 'Marks a circuit node as the ground or reference connection. It does not provide voltage or complete the return path by itself.',
+                        'component-uses-switch': 'Opens or closes the conducting path. A closed switch lets current pass; an open switch interrupts it.',
+                        'component-uses-utilityBox': 'Distributes positive and negative connections. Each pair of matching terminals is joined inside; the two rails stay isolated. It is not a power source.',
+                        'component-uses-bulb': 'Acts as a resistive load that lights when current flows through it. Adjust its resistance in the properties.',
+                        'component-uses-appliance': 'Models an AC appliance load from its rated voltage, power, and power factor.',
                         'component-type-battery': 'Battery',
                         'component-type-acSource': 'AC Source',
                         'component-type-appliance': 'Appliance Load',
                         'component-type-resistor': 'Resistor',
+                        'component-type-capacitor': 'Capacitor',
+                        'component-type-inductor': 'Inductor',
+                        'component-type-ground': 'Ground',
+                        'capacitance-property': 'Capacitance (F)',
+                        'inductance-property': 'Inductance (H)',
                         'component-type-switch': 'Switch',
                         'component-type-utilityBox': 'Utility Box',
-                        'utility-box-connection-note': 'All four terminals connect inside the box as one junction.',
+                        'utility-box-connection-note': 'The two upper terminals connect to positive (+); the two lower terminals connect to negative (−). The two rails are isolated inside the box.',
                         'component-type-bulb': 'Bulb',
                         'voltage-property': 'Voltage (V)',
                         'rms-voltage-property': 'AC RMS Voltage (V)',
@@ -2246,6 +2215,7 @@
                         'open_circuit': 'The circuit path is interrupted. Current cannot flow in a broken path.',
                         'switch_open': 'The switch is open, so the conducting path is interrupted.',
                         'invalid_resistance': 'One or more components have invalid resistance values.',
+                        'invalid_reactive_value': 'Capacitance and inductance values must be greater than zero.',
                         'short_circuit': 'Short circuit detected. Current cannot be calculated reliably using this ideal-source model.',
                         'solver_error': 'The circuit could not be solved. Check the circuit connections and component values.',
                         'series_circuit_explanation': 'Current flows because the circuit is closed and the source provides voltage. In a series circuit, the same current flows through all components. The voltage drops across resistors add up to the source voltage.',
@@ -2277,6 +2247,9 @@
                         'tool-battery-label': 'Baterya',
                         'tool-ac-source-label': 'AC Source',
                         'tool-resistor-label': 'Resistor',
+                        'tool-capacitor-label': 'Capacitor',
+                        'tool-inductor-label': 'Inductor',
+                        'tool-ground-label': 'Ground',
                         'tool-switch-label': 'Switch',
                         'tool-utility-box-label': 'Kahon sa koneksyon',
                         'welcome-tagline': 'Paghimo og circuit ug tan-awa ang pag-agos sa kuryente niini.',
@@ -2292,14 +2265,32 @@
                         'empty-state-text': 'Pagpili ug component gikan sa toolbar aron magsugod sa paghimo sa imong circuit',
                         'properties-title': 'Mga Property',
                         'no-selection-text': 'Walay napiling component',
+                        'copy-component': 'Kopyaha ang Component',
+                        'paste-component': 'Idikit ang Component',
                         'component-type': 'Matang',
+                        'component-uses-title': 'Gamit ug function',
+                        'component-uses-battery': 'Naghatag og DC voltage ug enerhiya. Ikonektar ang positive ug negative terminals aron makompleto ang circuit.',
+                        'component-uses-acSource': 'Naghatag og alternating voltage. Ibutang ang RMS voltage ug frequency aron masundog ang AC supply.',
+                        'component-uses-resistor': 'Nagpugong sa current ug nagmugna og voltage drop. Mosunod ang resistance sa Ohm’s law: V = I × R.',
+                        'component-uses-capacitor': 'Motipig og enerhiya sa electric field. Niining steady-state model, babagan niini ang DC ug magdepende sa capacitance ug frequency ang AC impedance.',
+                        'component-uses-inductor': 'Motipig og enerhiya sa magnetic field. Niining steady-state model, mura kini og short sa DC ug magdepende sa inductance ug frequency ang AC impedance.',
+                        'component-uses-ground': 'Timaan kini sa ground o reference node sa circuit. Dili kini tinubdan sa voltage ug dili usab kini makakompleto sa return path nga mag-inusara.',
+                        'component-uses-switch': 'Moabli o mosira sa agianan sa kuryente. Modagayday ang current kung sirado; maputol kung abli.',
+                        'component-uses-utilityBox': 'Nag-apod-apod sa positive ug negative nga koneksyon. Magkadugtong sa sulod ang pares nga parehas og polarity, apan bulag ang duha ka linya. Dili kini power source.',
+                        'component-uses-bulb': 'Usa ka resistive load nga mosiga kon moagi ang current. Mausab ang resistance niini sa properties.',
+                        'component-uses-appliance': 'Nagsundog sa AC appliance load gamit ang rated voltage, power, ug power factor niini.',
                         'component-type-battery': 'Baterya',
                         'component-type-acSource': 'AC Source',
                         'component-type-appliance': 'Appliance Load',
                         'component-type-resistor': 'Resistor',
+                        'component-type-capacitor': 'Capacitor',
+                        'component-type-inductor': 'Inductor',
+                        'component-type-ground': 'Ground',
+                        'capacitance-property': 'Capacitance (F)',
+                        'inductance-property': 'Inductance (H)',
                         'component-type-switch': 'Switch',
                         'component-type-utilityBox': 'Kahon sa koneksyon',
-                        'utility-box-connection-note': 'Konektado ang upat ka terminal sulod sa kahon isip usa ka junction.',
+                        'utility-box-connection-note': 'Ang duha ka terminal sa taas konektado sa positive (+); ang duha sa ubos konektado sa negative (−). Ang duha ka linya bulag sa sulod sa kahon.',
                         'component-type-bulb': 'Bombilya',
                         'voltage-property': 'Voltage (V)',
                         'rms-voltage-property': 'AC RMS Voltage (V)',
@@ -2338,6 +2329,7 @@
                         'open_circuit': 'Ang agianan sa circuit naputol. Ang current dili makagi sa putol nga agianan.',
                         'switch_open': 'Bukas ang switch, busa naputol ang agianan sa current.',
                         'invalid_resistance': 'Adunay usa o labaw pang components nga dili balido ang resistance.',
+                        'invalid_reactive_value': 'Kinahanglan nga molapas sa zero ang capacitance ug inductance.',
                         'short_circuit': 'Nakit-an ang short circuit. Dili matino ang current gamit niining ideal-source model.',
                         'solver_error': 'Dili masulbad ang circuit. Susiha ang mga koneksyon ug value sa components.',
                         'series_circuit_explanation': 'Moagi ang current kay sirado ang circuit ug adunay voltage ang source. Sa series circuit, parehas nga current ang moagi sa tanang components. Ang voltage drops sa mga resistor modugang hangtod sa voltage sa source.',
@@ -2483,7 +2475,7 @@
                 if (!Array.isArray(data.components) || !Array.isArray(data.wires)) return false;
                 if (typeof data.nextId !== 'number' || isNaN(data.nextId) || !isFinite(data.nextId) || data.nextId < 1) return false;
 
-                const validTypes = new Set(['battery', 'acSource', 'resistor', 'switch', 'utilityBox', 'bulb', 'appliance']);
+                const validTypes = new Set(['battery', 'acSource', 'resistor', 'capacitor', 'inductor', 'ground', 'switch', 'utilityBox', 'bulb', 'appliance']);
                 const componentIds = new Set();
                 const validTerminalIds = new Set();
 
@@ -2515,6 +2507,9 @@
                     } else if (comp.type === 'resistor' || comp.type === 'bulb') {
                         const r = parseFloat(comp.properties.resistance);
                         if (isNaN(r) || !isFinite(r) || r < 0) return false;
+                    } else if (comp.type === 'capacitor' || comp.type === 'inductor') {
+                        const value = parseFloat(comp.properties.value);
+                        if (!Number.isFinite(value) || value <= 0) return false;
                     } else if (comp.type === 'appliance') {
                         const v = comp.properties.ratedVoltage === null || comp.properties.ratedVoltage === '' ? null : parseFloat(comp.properties.ratedVoltage);
                         const p = comp.properties.ratedPower === null || comp.properties.ratedPower === '' ? null : parseFloat(comp.properties.ratedPower);
@@ -2527,8 +2522,8 @@
                     }
 
                     if (!Array.isArray(comp.terminals) || comp.terminals.length === 0) return false;
-                    const expectedTerminals = comp.type === 'utilityBox' ? 4 :
-                        ['battery', 'acSource', 'resistor', 'switch', 'bulb', 'appliance'].includes(comp.type) ? 2 : null;
+                    const expectedTerminals = comp.type === 'utilityBox' ? 4 : comp.type === 'ground' ? 1 :
+                        ['battery', 'acSource', 'resistor', 'capacitor', 'inductor', 'switch', 'bulb', 'appliance'].includes(comp.type) ? 2 : null;
                     if (expectedTerminals !== null && comp.terminals.length !== expectedTerminals) return false;
                     for (const term of comp.terminals) {
                         if (!term || typeof term !== 'object') return false;
@@ -2659,7 +2654,7 @@
                         this.onUpdate();
                     }
 
-                } else if (['battery', 'acSource', 'resistor', 'switch', 'utilityBox', 'bulb', 'appliance'].includes(this.currentTool)) {
+                } else if (['battery', 'acSource', 'resistor', 'capacitor', 'inductor', 'ground', 'switch', 'utilityBox', 'bulb', 'appliance'].includes(this.currentTool)) {
                     this.addComponent(this.currentTool, svgPoint);
                 }
             }
@@ -2721,6 +2716,9 @@
                     battery: { voltage: 9 },
                     acSource: { voltageRms: null, frequency: null },
                     resistor: { resistance: 10 },
+                    capacitor: { value: 0.000001 },
+                    inductor: { value: 0.01 },
+                    ground: {},
                     switch: { closed: true },
                     utilityBox: {},
                     bulb: { resistance: 5 },
@@ -2763,6 +2761,7 @@
                 this.animator = new CurrentAnimator(this.svg, this.model);
                 this.storage = new CircuitStorage();
                 this.i18n = new I18n();
+                this.componentClipboard = null;
                 
                 this.interaction = new InteractionManager(
                     this.svg,
@@ -2776,6 +2775,20 @@
             }
 
             setupUI() {
+                document.addEventListener('keydown', event => {
+                    if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+                    const target = event.target;
+                    if (target?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
+                    const key = event.key.toLowerCase();
+                    if (key === 'c' && this.model.getComponent(this.interaction.getSelectedId())) {
+                        event.preventDefault();
+                        this.copySelectedComponent();
+                    } else if (key === 'v' && this.componentClipboard) {
+                        event.preventDefault();
+                        this.pasteComponent();
+                    }
+                });
+
                 document.querySelectorAll('.tool-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
@@ -2841,7 +2854,8 @@
                 if (!content) return;
                 
                 if (!selectedId) {
-                    content.innerHTML = `<p id="no-selection-text" style="color: var(--text-secondary); font-size: 0.85rem;">${this.i18n.t('no-selection-text')}</p>`;
+                    content.innerHTML = `<p id="no-selection-text" style="color: var(--text-secondary); font-size: 0.85rem;">${this.i18n.t('no-selection-text')}</p><button id="paste-component-btn" ${this.componentClipboard ? '' : 'disabled'}>${this.i18n.t('paste-component')}</button>`;
+                    document.getElementById('paste-component-btn')?.addEventListener('click', () => this.pasteComponent());
                     return;
                 }
 
@@ -2877,10 +2891,17 @@
                         <label>${this.i18n.t('component-type')}</label>
                         <div>${this.i18n.t(`component-type-${component.type}`)}</div>
                     </div>
+                    <div class="component-uses">
+                        <strong>${this.i18n.t('component-uses-title')}</strong>
+                        <p>${this.i18n.t(`component-uses-${component.type}`)}</p>
+                    </div>
                 `;
 
                 if (component.type === 'utilityBox') {
                     html += `<p class="utility-box-note">${this.i18n.t('utility-box-connection-note')}</p>`;
+                } else if (component.type === 'capacitor' || component.type === 'inductor') {
+                    const propertyLabel = component.type === 'capacitor' ? 'capacitance-property' : 'inductance-property';
+                    html += `<div class="property-row"><label for="reactive-value-input">${this.i18n.t(propertyLabel)}</label><input type="number" id="reactive-value-input" value="${component.properties.value}" step="any" min="0.000000001"></div>`;
                 } else if (component.type === 'battery') {
                     html += `
                         <div class="property-row">
@@ -2928,6 +2949,8 @@
                         <button id="toggle-switch-btn">${this.i18n.t('toggle-switch')}</button>`;
                 }
 
+                html += `<div class="component-copy-actions"><button id="copy-component-btn">${this.i18n.t('copy-component')}</button><button id="paste-component-btn" ${this.componentClipboard ? '' : 'disabled'}>${this.i18n.t('paste-component')}</button></div>`;
+
                 if (selectedComponentResult) {
                     const voltageUnit = selectedCircuitResult.sourceType === 'ac' ? ' V RMS' : ' V';
                     const currentUnit = selectedCircuitResult.sourceType === 'ac' ? ' A RMS' : ' A';
@@ -2941,6 +2964,9 @@
                 html += `<button id="delete-component-btn" style="margin-top: 0.5rem;">${this.i18n.t('delete-component')}</button>`;
 
                 content.innerHTML = html;
+
+                document.getElementById('copy-component-btn')?.addEventListener('click', () => this.copySelectedComponent());
+                document.getElementById('paste-component-btn')?.addEventListener('click', () => this.pasteComponent());
 
                 const voltageInput = document.getElementById('voltage-input');
                 if (voltageInput) {
@@ -2959,6 +2985,17 @@
                         const val = parseFloat(e.target.value);
                         if (!isNaN(val) && val >= 0.01) {
                             component.properties.resistance = val;
+                            this.update();
+                        }
+                    });
+                }
+
+                const reactiveValueInput = document.getElementById('reactive-value-input');
+                if (reactiveValueInput) {
+                    reactiveValueInput.addEventListener('change', event => {
+                        const value = parseFloat(event.target.value);
+                        if (Number.isFinite(value) && value > 0) {
+                            component.properties.value = value;
                             this.update();
                         }
                     });
@@ -3000,6 +3037,41 @@
                         this.update();
                     });
                 }
+            }
+
+            copySelectedComponent() {
+                const component = this.model.getComponent(this.interaction.getSelectedId());
+                if (!component) return;
+                this.componentClipboard = {
+                    type: component.type,
+                    properties: JSON.parse(JSON.stringify(component.properties)),
+                    terminalTypes: component.terminals.map(terminal => terminal.type),
+                    position: { ...component.position },
+                    pasteCount: 0
+                };
+                this.update();
+            }
+
+            pasteComponent() {
+                if (!this.componentClipboard) return;
+                const source = this.componentClipboard;
+                const offset = 28 * (++source.pasteCount);
+                const copied = this.model.addComponent(source.type, JSON.parse(JSON.stringify(source.properties)), {
+                    x: source.position.x + offset,
+                    y: source.position.y + offset
+                });
+                copied.terminals.forEach((terminal, index) => {
+                    if (source.terminalTypes[index]) terminal.type = source.terminalTypes[index];
+                });
+                const bounds = this.svg.getBoundingClientRect();
+                copied.position = {
+                    x: Math.max(0, Math.min(bounds.width - 80, copied.position.x)),
+                    y: Math.max(0, Math.min(bounds.height - 80, copied.position.y))
+                };
+                this.interaction.selectedId = copied.id;
+                this.interaction.setTool('select');
+                document.querySelectorAll('.tool-btn').forEach(button => button.classList.toggle('active', button.dataset.tool === 'select'));
+                this.update();
             }
 
             solveAndDisplay() {
@@ -3147,7 +3219,7 @@
                 installButton.hidden = true;
             });
 
-            if ('serviceWorker' in navigator) {
+            if ('serviceWorker' in navigator && !window.Capacitor?.isNativePlatform?.()) {
                 navigator.serviceWorker.register('./service-worker.js').catch(error => {
                     console.error('Volt-Flow offline support could not start:', error);
                 });
