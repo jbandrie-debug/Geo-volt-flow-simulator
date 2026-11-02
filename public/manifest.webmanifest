@@ -2,12 +2,17 @@
   "id": "volt-flow-circuit-simulator",
   "name": "Volt-Flow Circuit Simulator",
   "short_name": "Volt-Flow",
-  "description": "Interactive electrical circuit simulator with DC/AC analysis, real-time current flow visualization, and diagnostic tools.",
-  "lang": "en",
+  "description": "Interactive electrical circuit simulator with DC and AC analysis, real-time current flow visualization, and diagnostic tools.",
+  "lang": "en-US",
   "dir": "ltr",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/Geo-volt-flow-simulator/",
+  "scope": "/Geo-volt-flow-simulator/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#121620",
   "theme_color": "#121620",
@@ -17,6 +22,12 @@
     "productivity"
   ],
   "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "auto"
+  },
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
   "icons": [
     {
       "src": "./icons/volt-flow-192.png",
@@ -40,14 +51,14 @@
   "screenshots": [
     {
       "src": "./screenshots/screenshot-desktop.png",
-      "sizes": "512x512",
+      "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Volt-Flow Desktop Circuit Workspace"
     },
     {
       "src": "./screenshots/screenshot-mobile.png",
-      "sizes": "512x512",
+      "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Volt-Flow Mobile Circuit Workspace"
@@ -58,7 +69,7 @@
       "name": "New Circuit",
       "short_name": "New",
       "description": "Launch Volt-Flow circuit canvas",
-      "url": "./index.html",
+      "url": "/Geo-volt-flow-simulator/",
       "icons": [
         {
           "src": "./icons/volt-flow-192.png",
