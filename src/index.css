@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* Custom dark scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #141926;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d374d;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a5568;
+}
+
+/* Metallic Shining Animation for GEO.SAB */
+@keyframes metallicShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes metallicGleam {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35))
+            drop-shadow(0 0 12px rgba(186, 215, 255, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))
+            drop-shadow(0 0 22px rgba(210, 230, 255, 0.55))
+            drop-shadow(0 0 2px rgba(255, 255, 255, 0.95));
+  }
+}
+
+@keyframes metallicBarSweep {
+  0% {
+    transform: translateX(-140%) skewX(-25deg);
+  }
+  50%, 100% {
+    transform: translateX(240%) skewX(-25deg);
+  }
+}
+
+@keyframes sparkleSpin {
+  0%, 100% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+.metallic-brand-badge {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(20, 26, 38, 0.95) 0%, rgba(35, 45, 66, 0.98) 50%, rgba(18, 24, 36, 0.95) 100%);
+  border: 1px solid rgba(203, 213, 225, 0.4);
+  box-shadow: 
+    0 4px 20px -2px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(148, 163, 184, 0.25);
+}
+
+.metallic-brand-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.05) 75%,
+    transparent 100%
+  );
+  animation: metallicBarSweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.metallic-text-shine {
+  background: linear-gradient(
+    115deg,
+    #94a3b8 0%,
+    #cbd5e1 15%,
+    #ffffff 28%,
+    #f1f5f9 35%,
+    #64748b 45%,
+    #94a3b8 55%,
+    #ffffff 68%,
+    #f8fafc 75%,
+    #94a3b8 88%,
+    #cbd5e1 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: metallicShimmer 3.5s linear infinite, metallicGleam 2.8s ease-in-out infinite;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.sparkle-icon {
+  animation: sparkleSpin 2.5s ease-in-out infinite;
+}
+

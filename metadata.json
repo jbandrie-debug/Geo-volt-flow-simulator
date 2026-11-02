@@ -1,0 +1,8 @@
+{
+  "name": "Volt-Flow Circuit Simulator",
+  "description": "Interactive electrical circuit simulator with DC and AC analysis, real-time charge flow visualization, bilingual English and Bisaya support, and comprehensive circuit diagnostics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
